@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "cycling",
+    "slug": "cycling",
+    "scheme": "cycling",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "cycling usa tu ubicación para mostrarte en el mapa y registrar tus recorridos."
+      }
+    },
+    "android": {
+      "package": "com.cycling.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir que cycling acceda a tu ubicación mientras utilizas la app."
+        }
+      ],
+      "expo-secure-store",
+      "expo-status-bar",
+      "expo-font",
+      "@maplibre/maplibre-react-native"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0660f6d9-3724-45c0-82ef-c0887ec6f3e4"
+      }
+    }
+  }
+}

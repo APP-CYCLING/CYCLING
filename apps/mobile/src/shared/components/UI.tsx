@@ -1,0 +1,13 @@
+import React, { ReactNode } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import { colors } from '../theme/colors';
+export function Page({children,scroll=true}:{children:ReactNode;scroll?:boolean}) {return scroll?<ScrollView style={s.page} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>{children}</ScrollView>:<View style={[s.page,s.content,{flex:1}]}>{children}</View>}
+export function H1({children}:{children:ReactNode}){return <Text style={s.h1}>{children}</Text>}
+export function Subtitle({children}:{children:ReactNode}){return <Text style={s.subtitle}>{children}</Text>}
+export function Section({title,children}:{title:string;children:ReactNode}){return <View style={{marginTop:24,gap:12}}><Text style={s.section}>{title}</Text>{children}</View>}
+export function Panel({children,style}:{children:ReactNode;style?:ViewStyle}){return <View style={[s.panel,style]}>{children}</View>}
+export function PrimaryButton({title,onPress,disabled=false,outline=false}:{title:string;onPress:()=>void;disabled?:boolean;outline?:boolean}){return <Pressable onPress={onPress} disabled={disabled} style={[s.button,outline&&{backgroundColor:colors.white,borderWidth:1,borderColor:colors.border},disabled&&{opacity:0.5}]}><Text style={{fontWeight:'800',fontSize:15,color:colors.black}}>{title}</Text></Pressable>}
+export function Field({label,...props}:TextInputProps & {label:string}) {return <View style={{gap:7}}><Text style={{fontWeight:'700',color:colors.black}}>{label}</Text><TextInput placeholderTextColor={colors.muted} style={s.field} {...props}/></View>}
+export function Busy(){return <ActivityIndicator size="large" color={colors.greenDark} style={{marginTop:30}}/>}
+export function Notice({message}:{message:string}){return <Panel style={{backgroundColor:colors.softGreen}}><Text style={{color:colors.greenDark,lineHeight:20}}>{message}</Text></Panel>}
+const s=StyleSheet.create({page:{flex:1,backgroundColor:colors.background},content:{padding:22,paddingBottom:42},h1:{fontSize:32,fontWeight:'900',letterSpacing:-1,color:colors.black},subtitle:{color:colors.muted,fontSize:14,lineHeight:21,marginTop:5},section:{fontWeight:'800',fontSize:20,color:colors.black},panel:{padding:17,backgroundColor:colors.white,borderRadius:20,borderWidth:1,borderColor:colors.border,gap:9},button:{minHeight:50,borderRadius:15,backgroundColor:colors.green,alignItems:'center',justifyContent:'center',paddingHorizontal:20},field:{backgroundColor:colors.white,borderRadius:13,borderWidth:1,borderColor:colors.border,paddingHorizontal:15,minHeight:50,color:colors.black}});

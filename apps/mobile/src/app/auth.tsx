@@ -1,0 +1,10 @@
+import React,{useState} from 'react';
+import {Alert,Pressable,Text,View} from 'react-native';
+import {router} from 'expo-router';
+import {Page,H1,Subtitle,Panel,Field,PrimaryButton} from '../shared/components/UI';
+import {useAuth} from '../modules/auth/context/AuthContext';
+import {colors} from '../shared/theme/colors';
+export default function Auth(){const {login,register}=useAuth(),[create,setCreate]=useState(false),[name,setName]=useState(''),[email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false);
+const submit=async()=>{if(!email.trim()||password.length<8||(create&&!name.trim())){Alert.alert('Revisa los datos','Indica un correo válido, una contraseña de 8 caracteres como mínimo y tu nombre al registrarte.');return}setBusy(true);try{if(create){const needsConfirmation=await register({name:name.trim(),email:email.trim(),password});if(needsConfirmation){Alert.alert('Revisa tu correo','Confirma tu correo electrónico desde el enlace enviado por Supabase y luego inicia sesión.');setCreate(false);return}}else await login({email:email.trim(),password});router.back()}catch(e:any){Alert.alert('No se pudo continuar',e.message)}finally{setBusy(false)}};
+return <Page><H1>{create?'Únete a cycling':'¡Bienvenido!'}</H1><Subtitle>{create?'Crea tu cuenta para guardar recorridos.':'Accede con Supabase Auth.'}</Subtitle><View style={{marginTop:22}}><Panel>{create&&<Field label="Nombre" value={name} onChangeText={setName}/>}<Field label="Correo" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"/><Field label="Contraseña" value={password} onChangeText={setPassword} secureTextEntry/><PrimaryButton title={busy?'Procesando...':create?'Crear cuenta':'Iniciar sesión'} onPress={submit} disabled={busy}/><Pressable onPress={()=>setCreate(!create)} style={{padding:10,alignItems:'center'}}><Text style={{color:colors.greenDark,fontWeight:'800'}}>{create?'Ya tengo cuenta':'Registrarme'}</Text></Pressable></Panel></View></Page>;
+}

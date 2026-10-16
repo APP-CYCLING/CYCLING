@@ -1,0 +1,11 @@
+export type Difficulty = 'easy' | 'moderate' | 'hard';
+export type LatLng = { latitude: number; longitude: number };
+export type CyclingRoute = { id: string; title: string; description: string; distanceKm: number; difficulty: Difficulty; durationMin: number; ascentM: number; coordinates: LatLng[]; isDemo: boolean };
+export type BikeLane = { id: string; name: string; kind: string; coordinates: LatLng[]; isDemo: boolean };
+export type Ride = { id: string; routeId: string | null; distanceKm: number; durationSec: number; startedAt: string; endedAt: string; coordinates: LatLng[] };
+export type User = { id: string; name: string; email: string };
+export type AuthResponse = { token: string; user: User };
+export type LoginInput = { email: string; password: string };
+export type RegisterInput = LoginInput & { name: string };
+export type CreateRideInput = Omit<Ride, 'id'>;
+export * from './maps';

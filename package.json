@@ -1,0 +1,21 @@
+{
+  "name": "cycling",
+  "private": true,
+  "version": "0.2.0",
+  "packageManager": "pnpm@10.15.0",
+  "scripts": {
+    "dev": "pnpm --filter @cycling/mobile start",
+    "start": "pnpm dev",
+    "android": "pnpm --filter @cycling/mobile android",
+    "ios": "pnpm --filter @cycling/mobile ios",
+    "check": "pnpm --filter @cycling/mobile check",
+    "typecheck": "pnpm check",
+    "test": "node --test scripts/check-env.test.cjs scripts/map-services.test.cjs"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
