@@ -1,4 +1,4 @@
-# cycling
+# CYCLING
 
 Aplicación de ciclismo con React Native, Expo SDK 57, Expo Router y Supabase Cloud. Monorepo pnpm con arquitectura por módulos, mapa MapLibre + MapTiler, planificación Geoapify y capa de infraestructura OSM.
 
