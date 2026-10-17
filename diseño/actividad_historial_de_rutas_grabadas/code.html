@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary": "#5b5f5a", "on-primary-fixed": "#0e2000", "primary-fixed-dim": "#9ad85e", "on-secondary-fixed": "#191d18", "tertiary": "#845400", "on-tertiary-fixed": "#2a1800", "surface": "#f5fbf3", "surface-container": "#e9f0e7", "surface-variant": "#dee4dc", "secondary-container": "#e0e4dd", "tertiary-fixed": "#ffddb6", "secondary-fixed-dim": "#c4c8c1", "on-secondary-container": "#616560", "on-tertiary-container": "#805100", "primary-fixed": "#b5f577", "surface-bright": "#f5fbf3", "error-container": "#ffdad6", "on-background": "#171d18", "on-secondary-fixed-variant": "#444843", "surface-container-low": "#eff5ed", "background": "#f5fbf3", "on-error": "#ffffff", "on-tertiary-fixed-variant": "#643f00", "on-secondary": "#ffffff", "primary": "#3a6a00", "on-surface-variant": "#424939", "on-primary": "#ffffff", "on-error-container": "#93000a", "tertiary-fixed-dim": "#ffb95b", "surface-container-lowest": "#ffffff", "on-surface": "#171d18", "primary-container": "#a7e66a", "surface-tint": "#3a6a00", "surface-dim": "#d5dcd4", "outline-variant": "#c2c9b5", "surface-container-highest": "#dee4dc", "on-tertiary": "#ffffff", "surface-container-high": "#e3eae2", "outline": "#727a68", "inverse-surface": "#2b322d", "on-primary-fixed-variant": "#2b5000", "error": "#ba1a1a", "secondary-fixed": "#e0e4dd", "tertiary-container": "#ffcb8b", "inverse-primary": "#9ad85e", "inverse-on-surface": "#ecf3ea", "on-primary-container": "#386700" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "1rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "space-xs": "0.25rem", "space-md": "1rem" }, "fontFamily": { "body-sm": ["Inter"], "headline-sm": ["Inter"], "label-sm": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"], "label-lg": ["Inter"], "display-lg-mobile": ["Inter"], "headline-lg-mobile": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "metric-nav": ["Inter"] }, "fontSize": { "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-lg-mobile": ["36px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "headline-lg-mobile": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "display-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "metric-nav": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="px-margin h-14 flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="CYCLING Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WjVLu0as060kQ1c_b4Lk05OkU0ck1e18plgFzEklaKshxkJ0vT_6FhItt1s3j85412yacx3K9WOj27tlllO72Z6ft_yM48Uj7fXwH3cBjWgNe2ytGw90Sk2aRhWmXFRNFCVofehgy9svCkX52tda2h8p0PG4p_sti8rIrgSj4RDtmsga-bFdw6JBxkO2hkViEbpO20dMD1u-hTQ70bW0hLgaA6EkrrQSeYPTrAoEcL"/><span class="font-label-lg text-label-lg font-bold tracking-tight text-on-surface">CYCLING</span></div><div class="flex items-center gap-space-sm"><span class="font-headline-sm text-headline-sm text-on-surface select-none">Actividad</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="w-11 h-11 flex items-center justify-center rounded-full text-secondary hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a class="flex items-center justify-center w-11 h-11" data-path="perfil" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-primary-container/60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoyZFQbmqD07t2lF3sqyLIfuu-5D0G8T2xTISGrdI68QG2eGlhnGNlraOZKQ5jtJ9W58nF7pqo9ClcpJC-SfLDQM2JOoIZBXfXDgypUHoco7VRsSUxUOvatgJ4fpftuTUZ5LG4QmTQ-Imn_RoA8TrUgDV1V61eTqM1_-P9QhC2evwkBhlGdDcWJVGXAwlRszY0-T3LbGlTyYkTEXkW8Ra19FEKqqwqiQNvc0GiHF4"/></a></div></div></header><main class="flex-1 w-full pt-14 pb-20 bg-surface flex flex-col"><div class="flex flex-col w-full pb-8">
+<!-- Cabecera de Sección & Perfil Rápido -->
+<section class="px-margin pt-4 pb-2">
+<div class="flex items-center justify-between mb-3">
+<div>
+<div class="flex items-center gap-1.5">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Camila Valdivia</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Mi Actividad</h1>
+</div>
+<button aria-label="Opciones de exportación y sincronización" class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-on-surface" id="btn-export">
+<span class="material-symbols-outlined text-[18px]">sync_alt</span>
+<span class="font-label-md text-label-md">Strava</span>
+</button>
+</div>
+<!-- Filtros de Período Temporal (Scroll Horizontal) -->
+<div aria-label="Filtro temporal" class="flex items-center gap-2 overflow-x-auto pb-1.5 -mx-margin px-margin scrollbar-none" role="tablist">
+<button aria-selected="true" class="filter-chip active flex-shrink-0 h-9 px-4 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md flex items-center justify-center transition-all shadow-sm" role="tab">
+        Esta semana
+      </button>
+<button aria-selected="false" class="filter-chip flex-shrink-0 h-9 px-4 rounded-full bg-surface-container text-secondary hover:text-on-surface font-label-md text-label-md flex items-center justify-center transition-all" role="tab">
+        Mes actual
+      </button>
+<button aria-selected="false" class="filter-chip flex-shrink-0 h-9 px-4 rounded-full bg-surface-container text-secondary hover:text-on-surface font-label-md text-label-md flex items-center justify-center transition-all" role="tab">
+        Año 2024
+      </button>
+<button aria-selected="false" class="filter-chip flex-shrink-0 h-9 px-4 rounded-full bg-surface-container text-secondary hover:text-on-surface font-label-md text-label-md flex items-center justify-center transition-all" role="tab">
+        Todo el historial
+      </button>
+</div>
+<!-- Modos de ciclismo secundarios -->
+<div class="flex items-center gap-1.5 mt-2.5 overflow-x-auto pb-1 -mx-margin px-margin">
+<button class="category-chip active flex items-center gap-1 px-3 py-1 rounded-full bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>Todos</span>
+</button>
+<button class="category-chip flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low text-secondary hover:text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">location_city</span>
+<span>Commute/Urbano</span>
+</button>
+<button class="category-chip flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low text-secondary hover:text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">terrain</span>
+<span>Fondo/Ruta</span>
+</button>
+<button class="category-chip flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-low text-secondary hover:text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">reorder</span>
+<span>Gravel</span>
+</button>
+</div>
+</section>
+<!-- Resumen de Rendimiento Acumulado -->
+<section class="px-margin my-3">
+<div class="rounded-xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wide text-secondary">Distancia Total</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-nav text-metric-nav text-on-surface">142.8</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">km</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-container/40 text-on-primary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">eco</span>
+<span class="font-bold">24.8 kg CO₂</span>
+</span>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Ahorro estimado</span>
+</div>
+</div>
+<!-- Grilla de métricas secundarias -->
+<div class="grid grid-cols-3 gap-2 pt-3 bg-surface-container-low rounded-lg p-2.5">
+<div class="flex flex-col items-center text-center">
+<div class="flex items-center gap-1 text-secondary mb-0.5">
+<span class="material-symbols-outlined text-[16px]">route</span>
+<span class="font-label-sm text-label-sm">Rutas</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface">14</span>
+<span class="font-body-sm text-body-sm text-secondary">completadas</span>
+</div>
+<div class="flex flex-col items-center text-center border-l-0">
+<div class="flex items-center gap-1 text-secondary mb-0.5">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-sm text-label-sm">Tiempo</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface">6h 45m</span>
+<span class="font-body-sm text-body-sm text-secondary">en pedales</span>
+</div>
+<div class="flex flex-col items-center text-center border-l-0">
+<div class="flex items-center gap-1 text-secondary mb-0.5">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+<span class="font-label-sm text-label-sm">Promedio</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface">18.5</span>
+<span class="font-body-sm text-body-sm text-secondary">km/h ritmo</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Gráfico de Tendencia Semanal -->
+<section class="px-margin mb-4">
+<div class="rounded-xl bg-surface-container-lowest p-4 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">bar_chart</span>
+<h2 class="font-label-lg text-label-lg text-on-surface">Kilometraje por Día</h2>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container">18-24 Oct</span>
+</div>
+<!-- Indicador de pico -->
+<div class="flex items-center gap-1.5 mb-3 px-2 py-1 rounded-lg bg-surface-container-low w-fit">
+<span class="material-symbols-outlined text-primary text-[16px]">trending_up</span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Pico semanal: 42.5 km (Sáb)</span>
+</div>
+<!-- Visualizador de Barras SVG Interactivo -->
+<div class="w-full flex items-end justify-between gap-2 h-36 pt-4 pb-1">
+<!-- Lun -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">12</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 28%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Lun</span>
+</div>
+<!-- Mar -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">18</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 42%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Mar</span>
+</div>
+<!-- Mié -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">12</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 30%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Mié</span>
+</div>
+<!-- Jue -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">18</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 44%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Jue</span>
+</div>
+<!-- Vie -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">15</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 35%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Vie</span>
+</div>
+<!-- Sáb (Pico) -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-label-sm text-label-sm text-on-surface font-bold mb-1">42.5</span>
+<div class="w-full max-w-[28px] bg-primary-container rounded-t-lg shadow-sm" style="height: 100%;"></div>
+<span class="font-label-sm text-label-sm text-on-surface font-bold mt-2">Sáb</span>
+</div>
+<!-- Dom -->
+<div class="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer">
+<span class="font-body-sm text-body-sm text-secondary opacity-0 group-hover:opacity-100 transition-opacity mb-1">24</span>
+<div class="w-full max-w-[28px] bg-secondary-container rounded-t-lg transition-all group-hover:bg-primary-container" style="height: 56%;"></div>
+<span class="font-label-sm text-label-sm text-secondary mt-2">Dom</span>
+</div>
+</div>
+</div>
+</section>
+<!-- LISTADO DE RECORRIDOS Y RUTAS GRABADAS -->
+<section class="px-margin flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Historial de Salidas</h2>
+<span class="font-label-sm text-label-sm text-secondary">3 grabaciones recientes</span>
+</div>
+<!-- GRUPO 1: Hoy, 24 de Octubre -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Hoy, 24 de Octubre</span>
+</div>
+<!-- Tarjeta 1: Malecón & Barranco -->
+<article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-primary-container/40 text-on-primary-container font-label-sm text-label-sm">
+                Commute Urbano
+              </span>
+<span class="text-secondary font-body-sm text-body-sm">• 95% Ciclovía</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ruta Mañanera Malecón &amp; Barranco</h3>
+<div class="flex items-center gap-2 mt-0.5 text-secondary">
+<span class="flex items-center gap-0.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 07:15 AM
+              </span>
+<span>•</span>
+<span class="flex items-center gap-0.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px]">directions_bike</span> Specialized Sirrus X
+              </span>
+</div>
+</div>
+<button aria-label="Opciones de ruta" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- Mini-Mapa Vectorial con Estilo Canvas Urbano -->
+<div class="relative w-full h-32 rounded-lg bg-surface-container overflow-hidden flex items-center justify-center">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 320 120" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#dee4dc" height="100%" opacity="0.6" width="100%"></rect>
+<!-- Trama de calles urbanas -->
+<path d="M-20 40 L340 40 M-20 80 L340 80 M80 -10 L80 130 M180 -10 L180 130 M260 -10 L260 130" stroke="#c2c9b5" stroke-dasharray="3,3" stroke-width="2"></path>
+<!-- Zona de costa / parque -->
+<path d="M0 120 Q 100 80 160 90 T 320 60 L 320 120 Z" fill="#b5f577" opacity="0.25"></path>
+<!-- Trazo GPS grabado de la ruta -->
+<path d="M 35 75 Q 80 30 140 55 T 220 35 T 285 70" fill="none" stroke="#171d18" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"></path>
+<path d="M 35 75 Q 80 30 140 55 T 220 35 T 285 70" fill="none" stroke="#a7e66a" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"></path>
+<!-- Punto de Inicio -->
+<circle cx="35" cy="75" fill="#3a6a00" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<!-- Punto Final Meta -->
+<circle cx="285" cy="70" fill="#ba1a1a" r="5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<!-- Insignia Flotante de Desnivel -->
+<div class="absolute bottom-2 left-2 px-2 py-1 rounded bg-inverse-surface/80 backdrop-blur-sm text-inverse-on-surface flex items-center gap-1 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px] text-primary-container">elevation</span>
+<span>+65m</span>
+</div>
+<!-- Botón de Repetición Rápida -->
+<button class="absolute bottom-2 right-2 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface font-label-sm text-label-sm shadow-sm flex items-center gap-1 hover:bg-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-[14px]">replay</span>
+<span>Repetir</span>
+</button>
+</div>
+<!-- Métricas Clave de la Salida -->
+<div class="grid grid-cols-4 gap-1 pt-1 text-center bg-surface-container-low rounded-lg py-2">
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">18.2</span>
+<span class="block font-body-sm text-body-sm text-secondary">km</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">52</span>
+<span class="block font-body-sm text-body-sm text-secondary">min</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">21.0</span>
+<span class="block font-body-sm text-body-sm text-secondary">km/h</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">315</span>
+<span class="block font-body-sm text-body-sm text-secondary">kcal</span>
+</div>
+</div>
+<!-- Botón Ver Detalle -->
+<button class="w-full h-11 rounded-full bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span>Ver telemetría y segmentos</span>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</article>
+</div>
+<!-- GRUPO 2: Ayer, 23 de Octubre -->
+<div class="flex flex-col gap-2 mt-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Ayer, 23 de Octubre</span>
+</div>
+<!-- Tarjeta 2: Salaverry a Kennedy -->
+<article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+                Urbana Rápida
+              </span>
+<span class="text-secondary font-body-sm text-body-sm">• 90% Ciclovía segregada</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Circuito Salaverry a Parque Kennedy</h3>
+<div class="flex items-center gap-2 mt-0.5 text-secondary">
+<span class="flex items-center gap-0.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 06:40 PM
+              </span>
+</div>
+</div>
+<button aria-label="Opciones de ruta" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<!-- Mini-Mapa Polyline 2 -->
+<div class="relative w-full h-28 rounded-lg bg-surface-container overflow-hidden flex items-center justify-center">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 320 100" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#dee4dc" height="100%" opacity="0.5" width="100%"></rect>
+<path d="M20 20 L300 20 M20 80 L300 80 M120 -10 L120 110 M220 -10 L220 110" stroke="#c2c9b5" stroke-dasharray="2,2" stroke-width="1.5"></path>
+<!-- Trazado directo diagonal -->
+<path d="M 40 85 L 110 50 L 190 60 L 270 20" fill="none" stroke="#171d18" stroke-linecap="round" stroke-width="5"></path>
+<path d="M 40 85 L 110 50 L 190 60 L 270 20" fill="none" stroke="#a7e66a" stroke-linecap="round" stroke-width="3.5"></path>
+<circle cx="40" cy="85" fill="#3a6a00" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="270" cy="20" fill="#ba1a1a" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+</div>
+<!-- Métricas Clave -->
+<div class="grid grid-cols-4 gap-1 text-center bg-surface-container-low rounded-lg py-2">
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">12.4</span>
+<span class="block font-body-sm text-body-sm text-secondary">km</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">36</span>
+<span class="block font-body-sm text-body-sm text-secondary">min</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">20.6</span>
+<span class="block font-body-sm text-body-sm text-secondary">km/h</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">210</span>
+<span class="block font-body-sm text-body-sm text-secondary">kcal</span>
+</div>
+</div>
+</article>
+</div>
+<!-- GRUPO 3: Domingo, 20 de Octubre -->
+<div class="flex flex-col gap-2 mt-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Domingo, 20 de Octubre</span>
+</div>
+<!-- Tarjeta 3: Récord Fondo Costa Verde -->
+<article class="rounded-xl bg-surface-container-lowest p-4 shadow-sm flex flex-col gap-3 relative overflow-hidden">
+<!-- Detalle decorativo de récord -->
+<div class="absolute top-0 right-0 bg-primary-container px-3 py-1 rounded-bl-xl flex items-center gap-1 text-on-primary-container">
+<span class="material-symbols-outlined text-[15px]">emoji_events</span>
+<span class="font-label-sm text-label-sm font-bold">Récord Distancia 🏆</span>
+</div>
+<div class="flex items-start justify-between gap-2 mt-1">
+<div>
+<div class="flex items-center gap-1.5 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+                Fondo / Rendimiento
+              </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Fondo Costa Verde Completa</h3>
+<p class="font-body-sm text-body-sm text-secondary">Chorrillos — San Miguel (Ida y Vuelta)</p>
+<div class="flex items-center gap-2 mt-1 text-secondary">
+<span class="flex items-center gap-0.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px]">directions_bike</span> Specialized Sirrus X
+              </span>
+</div>
+</div>
+</div>
+<!-- Mini-Mapa Polyline Sinuoso Costero -->
+<div class="relative w-full h-32 rounded-lg bg-surface-container overflow-hidden flex items-center justify-center">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 320 120" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#dee4dc" height="100%" opacity="0.5" width="100%"></rect>
+<!-- Océano / Litoral -->
+<path d="M-10 130 C 60 70, 140 110, 240 40 L 330 30 L 330 130 Z" fill="#9ad85e" opacity="0.2"></path>
+<!-- Trazado costero largo -->
+<path d="M 25 105 C 80 90, 110 50, 160 85 S 250 25, 295 45" fill="none" stroke="#171d18" stroke-linecap="round" stroke-width="5"></path>
+<path d="M 25 105 C 80 90, 110 50, 160 85 S 250 25, 295 45" fill="none" stroke="#a7e66a" stroke-linecap="round" stroke-width="3.5"></path>
+<circle cx="25" cy="105" fill="#3a6a00" r="5" stroke="#ffffff" stroke-width="2"></circle>
+<circle cx="295" cy="45" fill="#ba1a1a" r="5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<div class="absolute bottom-2 left-2 px-2 py-1 rounded bg-inverse-surface/80 backdrop-blur-sm text-inverse-on-surface flex items-center gap-1 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px] text-primary-container">elevation</span>
+<span>+180m desnivel</span>
+</div>
+</div>
+<!-- Métricas Destacadas del Fondo -->
+<div class="grid grid-cols-4 gap-1 text-center bg-surface-container-low rounded-lg py-2">
+<div>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">42.5</span>
+<span class="block font-body-sm text-body-sm text-secondary">km</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">1h 48m</span>
+<span class="block font-body-sm text-body-sm text-secondary">tiempo</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">23.6</span>
+<span class="block font-body-sm text-body-sm text-secondary">km/h</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface">840</span>
+<span class="block font-body-sm text-body-sm text-secondary">kcal</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Botones de Acción Secundaria & Compartir -->
+<section class="px-margin mt-6 flex flex-col gap-2.5">
+<button class="w-full h-14 rounded-full bg-inverse-surface text-primary-container font-label-lg text-label-lg flex items-center justify-center gap-2 hover:opacity-95 transition-opacity shadow-md">
+<span class="material-symbols-outlined text-[20px]">ios_share</span>
+<span>Compartir resumen semanal</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="flex-1 h-12 rounded-full bg-surface-container-highest text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Exportar GPX / FIT</span>
+</button>
+<button class="flex-1 h-12 rounded-full bg-surface-container-highest text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">settings_backup_restore</span>
+<span>Sincronizar</span>
+</button>
+</div>
+</section>
+<!-- Modal / Toast de Interacción Rápida (Oculto dinámicamente) -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 z-50 transition-opacity duration-300 opacity-0 pointer-events-none" id="toast-sync">
+<span class="material-symbols-outlined text-primary-container text-[18px]">check_circle</span>
+<span class="font-label-md text-label-md">Sincronizado con Strava y Garmin Connect</span>
+</div>
+</div>
+<script>
+  // Micro-interacción: Selección de Chips de Filtro Temporal
+  const filterChips = document.querySelectorAll('.filter-chip');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => {
+        c.classList.remove('bg-primary-container', 'text-on-primary-container', 'shadow-sm', 'active');
+        c.classList.add('bg-surface-container', 'text-secondary');
+        c.setAttribute('aria-selected', 'false');
+      });
+      chip.classList.add('bg-primary-container', 'text-on-primary-container', 'shadow-sm', 'active');
+      chip.classList.remove('bg-surface-container', 'text-secondary');
+      chip.setAttribute('aria-selected', 'true');
+    });
+  });
+
+  // Micro-interacción: Selección de Categorías de Ciclismo
+  const categoryChips = document.querySelectorAll('.category-chip');
+  categoryChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      categoryChips.forEach(c => {
+        c.classList.remove('bg-inverse-surface', 'text-inverse-on-surface', 'active');
+        c.classList.add('bg-surface-container-low', 'text-secondary');
+      });
+      chip.classList.add('bg-inverse-surface', 'text-inverse-on-surface', 'active');
+      chip.classList.remove('bg-surface-container-low', 'text-secondary');
+    });
+  });
+
+  // Feedback al pulsar sincronización
+  const syncBtn = document.getElementById('btn-export');
+  const toast = document.getElementById('toast-sync');
+  if (syncBtn && toast) {
+    syncBtn.addEventListener('click', () => {
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2600);
+    });
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="[&amp;&gt;div]:bg-primary-container [&amp;&gt;div]:text-on-primary-container text-on-primary-container font-bold"><div class="h-16 px-gutter-mobile flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-secondary hover:text-on-surface transition-colors" data-path="inicio" href="#"><div class="flex items-center justify-center w-10 h-7 rounded-full transition-colors"><span class="material-symbols-outlined text-[24px]">home</span></div><span class="font-label-sm text-label-sm mt-0.5">Inicio</span></a><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-secondary hover:text-on-surface transition-colors" data-path="explorar" href="#"><div class="flex items-center justify-center w-10 h-7 rounded-full transition-colors"><span class="material-symbols-outlined text-[24px]">explore</span></div><span class="font-label-sm text-label-sm mt-0.5">Explorar</span></a><a class="relative flex flex-col items-center justify-center min-w-[64px] h-12 px-space-sm rounded-full bg-primary-container text-on-primary-container hover:bg-primary-fixed-dim transition-all" data-path="pedalear" href="#"><span class="material-symbols-outlined text-[26px]">pedal_bike</span><span class="font-label-sm text-label-sm font-bold">Pedalear</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[56px] h-12 transition-colors [&amp;&gt;div]:bg-primary-container [&amp;&gt;div]:text-on-primary-container text-on-primary-container font-bold" data-path="actividad" href="#"><div class="flex items-center justify-center w-10 h-7 rounded-full transition-colors"><span class="material-symbols-outlined text-[24px]">bar_chart</span></div><span class="font-label-sm text-label-sm mt-0.5">Actividad</span></a><a class="flex flex-col items-center justify-center min-w-[56px] h-12 text-secondary hover:text-on-surface transition-colors" data-path="perfil" href="#"><div class="flex items-center justify-center w-10 h-7 rounded-full transition-colors"><span class="material-symbols-outlined text-[24px]">person</span></div><span class="font-label-sm text-label-sm mt-0.5">Perfil</span></a></div></nav></body></html>

@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "cycling",
+    "name": "CYCLING",
     "slug": "cycling",
     "scheme": "cycling",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "backgroundColor": "#FFFFFF",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0F1210",
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -20,7 +20,12 @@
         "ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
-      ]
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/branding/02_APP_ASSETS/adaptive/adaptive-foreground-safe.png",
+        "monochromeImage": "./assets/branding/02_APP_ASSETS/adaptive/adaptive-monochrome-safe.png",
+        "backgroundColor": "#0F1210"
+      }
     },
     "plugins": [
       "expo-router",
@@ -33,7 +38,28 @@
       "expo-secure-store",
       "expo-status-bar",
       "expo-font",
-      "@maplibre/maplibre-react-native"
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permite seleccionar fotos para tus actividades de CYCLING.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FFFFFF",
+          "image": "./assets/branding/03_SPLASH/native-splash-light.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#070A09",
+            "image": "./assets/branding/03_SPLASH/native-splash-dark.png"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false
@@ -43,6 +69,7 @@
       "eas": {
         "projectId": "0660f6d9-3724-45c0-82ef-c0887ec6f3e4"
       }
-    }
+    },
+    "icon": "./assets/branding/02_APP_ASSETS/icons/icon-1024.png"
   }
 }

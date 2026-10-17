@@ -16,5 +16,7 @@ serve("route", async (body) => {
   );
   url.searchParams.set("mode", "bicycle");
   url.searchParams.set("units", "metric");
+  url.searchParams.set("lang", "es");
+  url.searchParams.set("details", "instruction_details,route_details");
   return normalizeRoute(await fetchJson(url.toString()));
 });

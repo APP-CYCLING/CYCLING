@@ -13,6 +13,7 @@ export function useDestinationSearch(
   // La proximidad mejora la búsqueda, pero no dispara consultas por cada fix GPS.
   const lat = proximity ? Math.round(proximity.latitude * 100) / 100 : null,
     lon = proximity ? Math.round(proximity.longitude * 100) / 100 : null;
+  const [revision, setRevision] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
     let current = true;
@@ -46,6 +47,11 @@ export function useDestinationSearch(
       controller.abort();
       clearTimeout(timer);
     };
-  }, [text, lat, lon, enabled]);
-  return { suggestions, loading, error };
+  }, [text, lat, lon, enabled, revision]);
+  return {
+    suggestions,
+    loading,
+    error,
+    retry: () => setRevision((value) => value + 1),
+  };
 }

@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "icon": "./assets/branding/02_APP_ASSETS/icons/icon-1024.png",
+    "splash": {
+      "image": "./assets/branding/03_SPLASH/splash-dark-1242x2688.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F1210"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/branding/02_APP_ASSETS/adaptive/adaptive-foreground-1024.png",
+        "backgroundColor": "#0F1210"
+      }
+    }
+  }
+}

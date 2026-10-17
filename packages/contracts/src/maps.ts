@@ -8,6 +8,15 @@ export type PlannedRoute = {
   distanceMeters: number;
   durationSeconds: number;
   geometry: RouteGeometry;
+  steps?: NavigationStep[];
+};
+export type NavigationStep = {
+  legIndex: number;
+  fromIndex: number;
+  toIndex: number;
+  instruction: string;
+  maneuver: string;
+  streetName: string | null;
 };
 export type Destination = { id: string; label: string; coordinate: Coordinate };
 export type LaneKind = "cycleway" | "track" | "lane" | "shared" | "designated";

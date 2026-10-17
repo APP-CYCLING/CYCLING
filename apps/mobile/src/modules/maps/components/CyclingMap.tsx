@@ -2,9 +2,11 @@ import React from "react";
 import { Text, View } from "react-native";
 import Constants from "expo-constants";
 import type { CyclingMapProps } from "../types/map.types";
-import { colors } from "../../../shared/theme/colors";
+import { useThemeColors } from "../../../shared/theme/ThemeContext";
 
 export function CyclingMap(props: CyclingMapProps) {
+  const colors = useThemeColors();
+
   const missingKey = !process.env.EXPO_PUBLIC_MAPTILER_KEY;
   const expoGo = Constants.executionEnvironment === "storeClient";
   if (expoGo || missingKey)
@@ -19,7 +21,7 @@ export function CyclingMap(props: CyclingMapProps) {
           gap: 12,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: "800", color: colors.black }}>
+        <Text style={{ fontSize: 20, fontWeight: "800", color: colors.text }}>
           {expoGo
             ? "Abre cycling en su compilación propia"
             : "Mapa sin configurar"}

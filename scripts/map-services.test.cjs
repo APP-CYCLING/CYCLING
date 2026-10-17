@@ -30,6 +30,58 @@ function load(file, globals = {}) {
   return exports;
 }
 const domain = load("supabase/functions/_shared/domain.ts");
+const { normalizeNativeStyle } = load(
+  "apps/mobile/src/modules/maps/utils/native-style.ts",
+);
+test("Native style preserves real sources and credits while removing the attribution-only source", () => {
+  const original = {
+    version: 8,
+    sources: {
+      streets: { type: "vector", url: "https://example.test/tiles.json" },
+      credits: { type: "vector", attribution: "Provider credit" },
+    },
+    layers: [{ id: "streets", type: "line", source: "streets" }],
+  };
+  const result = normalizeNativeStyle(original);
+  assert.equal(result.sources.streets.url, original.sources.streets.url);
+  assert.equal(result.sources.streets.attribution, "Provider credit");
+  assert.equal(result.sources.credits, undefined);
+  assert.ok(original.sources.credits);
+  assert.throws(() =>
+    normalizeNativeStyle({
+      ...original,
+      layers: [{ id: "broken", type: "line", source: "credits" }],
+    }),
+  );
+});
+test("Native label adaptation keeps conservative placement and existing overlap rules", () => {
+  const result = normalizeNativeStyle({
+    version: 8,
+    sources: {},
+    layers: [
+      {
+        id: "labels",
+        type: "symbol",
+        layout: {
+          "text-overlap": "never",
+          "icon-overlap": ["step", ["zoom"], "never", 18, "cooperative"],
+        },
+      },
+      { id: "allowed", type: "symbol", layout: { "text-overlap": "always" } },
+      {
+        id: "existing",
+        type: "symbol",
+        layout: { "text-overlap": "always", "text-allow-overlap": false },
+      },
+    ],
+  });
+  assert.equal(result.layers[0].layout["text-allow-overlap"], false);
+  assert.equal(result.layers[0].layout["icon-allow-overlap"], false);
+  assert.equal(result.layers[0].layout["text-overlap"], undefined);
+  assert.equal(result.layers[0].layout["icon-overlap"], undefined);
+  assert.equal(result.layers[1].layout["text-allow-overlap"], true);
+  assert.equal(result.layers[2].layout["text-allow-overlap"], false);
+});
 const feature = (geometry) => ({
   features: [{ properties: { distance: 5200, time: 1320 }, geometry }],
 });

@@ -45,3 +45,25 @@ export function areaKey(bounds: Bounds): string {
     )
     .join(":");
 }
+export function contextBounds(
+  points: Position[],
+  minimumSpan = 0.003,
+): Bounds | null {
+  const bounds = boundsOf(points);
+  if (!bounds) return null;
+  const [w, s, e, n] = bounds;
+  const lat = (s + n) / 2,
+    lon = (w + e) / 2;
+  const dy = Math.max(n - s, minimumSpan) / 2;
+  const dx =
+    Math.max(
+      e - w,
+      minimumSpan / Math.max(0.2, Math.cos((lat * Math.PI) / 180)),
+    ) / 2;
+  return [
+    Math.max(-180, lon - dx),
+    Math.max(-90, lat - dy),
+    Math.min(180, lon + dx),
+    Math.min(90, lat + dy),
+  ];
+}

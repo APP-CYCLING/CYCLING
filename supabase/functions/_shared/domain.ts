@@ -91,6 +91,93 @@ export function normalizeRoute(value: unknown) {
     distanceMeters: distance,
     durationSeconds: duration,
     geometry: normalized,
+    steps: normalizeSteps(props.legs, normalized),
+  };
+}
+function normalizeSteps(
+  legs: unknown,
+  geometry: {
+    type: string;
+    coordinates: [number, number][] | [number, number][][];
+  },
+) {
+  const lines =
+    geometry.type === "LineString"
+      ? [geometry.coordinates as [number, number][]]
+      : (geometry.coordinates as [number, number][][]);
+  if (!Array.isArray(legs) || legs.length !== lines.length) return [];
+  return legs.flatMap((raw: unknown, legIndex: number) => {
+    if (
+      !raw ||
+      typeof raw !== "object" ||
+      !("steps" in raw) ||
+      !Array.isArray(raw.steps)
+    )
+      return [];
+    const steps = raw.steps.slice(0, 10000);
+    let previous = -1;
+    return steps.flatMap((value: unknown) => {
+      if (!value || typeof value !== "object") return [];
+      const step = value as Record<string, unknown>;
+      const from = step.from_index,
+        to = step.to_index;
+      if (
+        typeof from !== "number" ||
+        typeof to !== "number" ||
+        !Number.isInteger(from) ||
+        !Number.isInteger(to) ||
+        from < previous ||
+        from < 0 ||
+        to < from ||
+        to >= lines[legIndex].length
+      )
+        return [];
+      previous = from;
+      const instruction =
+        step.instruction && typeof step.instruction === "object"
+          ? (step.instruction as Record<string, unknown>)
+          : {};
+      const streets = Array.isArray(instruction.streets)
+        ? instruction.streets
+            .filter((name): name is string => typeof name === "string")
+            .join(", ")
+        : null;
+      return [
+        {
+          legIndex,
+          fromIndex: from,
+          toIndex: to,
+          instruction:
+            typeof instruction.text === "string"
+              ? instruction.text.slice(0, 600)
+              : "",
+          maneuver:
+            typeof instruction.type === "string"
+              ? instruction.type.slice(0, 60)
+              : "None",
+          streetName:
+            typeof step.name === "string"
+              ? step.name.slice(0, 200)
+              : streets?.slice(0, 200) || null,
+        },
+      ];
+    });
+  });
+}
+export function normalizeStreet(value: unknown) {
+  const data = record(value);
+  if (!Array.isArray(data.features) || !data.features.length)
+    return { street: null, locality: null };
+  const properties = record(record(data.features[0]).properties);
+  return {
+    street:
+      typeof properties.street === "string"
+        ? properties.street.slice(0, 200)
+        : null,
+    locality:
+      typeof properties.city === "string"
+        ? properties.city.slice(0, 200)
+        : null,
   };
 }
 export function normalizeDestinations(value: unknown) {

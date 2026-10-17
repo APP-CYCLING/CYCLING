@@ -18,6 +18,7 @@ export function useVisibleBikeLanes(bounds: Bounds | null, enabled: boolean) {
     bounds[2] - bounds[0] <= 0.12 &&
     bounds[3] - bounds[1] <= 0.12;
   const key = valid && bounds ? areaKey(bounds) : null;
+  const [revision, setRevision] = useState(0);
   useEffect(() => {
     let current = true;
     const controller = new AbortController();
@@ -62,6 +63,12 @@ export function useVisibleBikeLanes(bounds: Bounds | null, enabled: boolean) {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [key, enabled]);
-  return { data: enabled ? data : empty, loading, error };
+  }, [key, enabled, revision]);
+  return {
+    data: enabled ? data : empty,
+    loading,
+    error,
+    canRetry: !!key,
+    retry: () => setRevision((value) => value + 1),
+  };
 }

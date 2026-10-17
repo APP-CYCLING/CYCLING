@@ -7,12 +7,14 @@ export function useRoutePlanner(origin: Coordinate | null) {
     [route, setRoute] = useState<PlannedRoute | null>(null),
     [loading, setLoading] = useState(false),
     [error, setError] = useState("");
+  const [routeOrigin, setRouteOrigin] = useState<Coordinate | null>(null);
   const request = useRef<AbortController | null>(null),
     generation = useRef(0);
   const cancel = useCallback(() => {
     generation.current++;
     request.current?.abort();
     setRoute(null);
+    setRouteOrigin(null);
     setLoading(false);
     setError("");
   }, []);
@@ -33,6 +35,7 @@ export function useRoutePlanner(origin: Coordinate | null) {
     cancel();
     const id = generation.current;
     const controller = new AbortController();
+    setRouteOrigin({ ...origin });
     request.current = controller;
     setLoading(true);
     try {
@@ -44,10 +47,12 @@ export function useRoutePlanner(origin: Coordinate | null) {
       if (id === generation.current && !controller.signal.aborted)
         setRoute(value);
     } catch (e: unknown) {
-      if (id === generation.current && !controller.signal.aborted)
+      if (id === generation.current && !controller.signal.aborted) {
+        setRouteOrigin(null);
         setError(
           e instanceof Error ? e.message : "No se pudo calcular la ruta.",
         );
+      }
     } finally {
       if (id === generation.current) setLoading(false);
     }
@@ -59,5 +64,14 @@ export function useRoutePlanner(origin: Coordinate | null) {
     },
     [],
   );
-  return { destination, route, loading, error, select, calculate, cancel };
+  return {
+    destination,
+    route,
+    routeOrigin,
+    loading,
+    error,
+    select,
+    calculate,
+    cancel,
+  };
 }

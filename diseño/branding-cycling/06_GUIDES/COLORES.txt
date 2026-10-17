@@ -1,0 +1,3 @@
+Verde Lima: #A7F55B
+Negro: #0F1210
+Blanco: #FFFFFF

@@ -10,7 +10,7 @@
     "ios": "pnpm --filter @cycling/mobile ios",
     "check": "pnpm --filter @cycling/mobile check",
     "typecheck": "pnpm check",
-    "test": "node --test scripts/check-env.test.cjs scripts/map-services.test.cjs"
+    "test": "node --test scripts/check-env.test.cjs scripts/map-services.test.cjs scripts/location.test.cjs scripts/profile-activity.test.cjs scripts/ride-saving.test.cjs scripts/auth-ui.test.cjs scripts/startup.test.cjs scripts/ride-details.test.cjs scripts/live-navigation.test.cjs scripts/branding.test.cjs"
   },
   "devDependencies": {
     "typescript": "~6.0.3"

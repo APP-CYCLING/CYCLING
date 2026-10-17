@@ -1,42 +1,41 @@
 import * as Location from "expo-location";
-import type { Coordinate } from "@cycling/contracts";
-import { validCoordinate } from "../../maps/utils/geometry";
+import type { LocationProvider } from "../types/location.types";
 
-export function usablePosition(
-  location: Location.LocationObject,
-): Coordinate | null {
-  const point = {
-    latitude: location.coords.latitude,
-    longitude: location.coords.longitude,
-  };
-  if (
-    !validCoordinate(point) ||
-    location.coords.accuracy == null ||
-    location.coords.accuracy > 100 ||
-    Date.now() - location.timestamp > 30000
-  )
-    return null;
-  return point;
-}
-export const locationService = {
-  async requestPermission() {
-    const permission = await Location.requestForegroundPermissionsAsync();
-    if (!permission.granted)
-      throw new Error(
-        "Permiso denegado. Puedes elegir el origen tocando el mapa o habilitar la ubicación en Ajustes.",
+let permissionRequest: Promise<Location.LocationPermissionResponse> | null =
+  null;
+export const locationService: LocationProvider = {
+  async permission() {
+    const existing = await Location.getForegroundPermissionsAsync();
+    if (existing.granted || !existing.canAskAgain) return existing;
+    // Compartir el diálogo si se cambia de pantalla mientras el SO lo muestra.
+    if (!permissionRequest)
+      permissionRequest = Location.requestForegroundPermissionsAsync().finally(
+        () => {
+          permissionRequest = null;
+        },
       );
-    if (!(await Location.hasServicesEnabledAsync()))
-      throw new Error(
-        "El GPS está desactivado. Actívalo o selecciona un origen en el mapa.",
-      );
+    return permissionRequest;
   },
-  watch: (onLocation: (position: Coordinate | null) => void) =>
+  servicesEnabled: () => Location.hasServicesEnabledAsync(),
+  lastKnown: () =>
+    Location.getLastKnownPositionAsync({
+      maxAge: 15000,
+      requiredAccuracy: 1500,
+    }),
+  current: () =>
+    Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Balanced,
+      mayShowUserSettingsDialog: true,
+    }),
+  watch: (onFix, onError) =>
     Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
         distanceInterval: 0,
-        timeInterval: 5000,
+        timeInterval: 3000,
+        mayShowUserSettingsDialog: false,
       },
-      (location) => onLocation(usablePosition(location)),
+      onFix,
+      onError,
     ),
 };

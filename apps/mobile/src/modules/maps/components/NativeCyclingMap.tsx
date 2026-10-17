@@ -14,24 +14,28 @@ import {
   Layer,
   Marker,
   type CameraRef,
+  type StyleSpecification,
+  type InitialViewState,
 } from "@maplibre/maplibre-react-native";
 import type { FeatureCollection, Feature, LineString } from "geojson";
 import type { CyclingMapProps } from "../types/map.types";
 import {
   boundsOf,
+  contextBounds,
   geometryPoints,
   toPosition,
   validCoordinate,
 } from "../utils/geometry";
 import { colors } from "../../../shared/theme/colors";
+import { loadNativeMapStyle } from "../services/map-style.service";
 
-const styleUrl = `https://api.maptiler.com/maps/streets-v4/style.json?key=${encodeURIComponent(process.env.EXPO_PUBLIC_MAPTILER_KEY ?? "")}`;
 export function NativeCyclingMap(props: CyclingMapProps) {
   const {
     height = 330,
     fill,
     origin,
     destination,
+    stopPosition,
     geometry,
     infrastructure,
     onPick,
@@ -39,6 +43,7 @@ export function NativeCyclingMap(props: CyclingMapProps) {
     onLanePress,
     centerRequest = 0,
     fitRequest = 0,
+    initialFocus = "route",
     tracked = [],
     routes = [],
   } = props;
@@ -46,9 +51,30 @@ export function NativeCyclingMap(props: CyclingMapProps) {
     [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [attempt, setAttempt] = useState(0);
+  const [mapStyle, setMapStyle] = useState<StyleSpecification | null>(null);
   const location =
-    props.currentLocation ?? (props.showUser ? tracked.at(-1) : null);
+    props.currentLocation !== undefined
+      ? props.currentLocation
+      : props.showUser
+        ? tracked.at(-1)
+        : null;
+  // Capturar la ubicación disponible al montar el mapa, sin reiniciar la
+  // cámara con cada fix posterior (el seguimiento se coordina en los efectos).
+  const initialView = useMemo<InitialViewState>(
+    () =>
+      location
+        ? { center: toPosition(location), zoom: 15 }
+        : geometryPoints(geometry).length
+          ? { center: geometryPoints(geometry)[0], zoom: 14 }
+          : tracked.length
+            ? { center: toPosition(tracked[0]), zoom: 14 }
+            : { center: [0, 0], zoom: 1 },
+    [mapStyle, attempt],
+  );
   const centered = useRef(false),
+    wasNavigating = useRef(false),
+    userInteracted = useRef(false),
+    lastCenterRequest = useRef(0),
     timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const historic = useMemo<FeatureCollection<LineString>>(
     () => ({
@@ -91,12 +117,21 @@ export function NativeCyclingMap(props: CyclingMapProps) {
     [geometry],
   );
   const fit = () => {
-    const points = geometryPoints(geometry);
+    const points = [
+      ...geometryPoints(geometry),
+      ...tracked.filter(validCoordinate).map(toPosition),
+    ];
+    if (stopPosition && validCoordinate(stopPosition))
+      points.push(toPosition(stopPosition));
     if (!points.length) {
       if (origin) points.push(toPosition(origin));
       if (destination) points.push(toPosition(destination));
     }
-    const bounds = boundsOf(
+    const bounds = (
+      props.minimumSpan
+        ? (p: [number, number][]) => contextBounds(p, props.minimumSpan)
+        : boundsOf
+    )(
       points.length
         ? points
         : historic.features.flatMap(
@@ -118,21 +153,59 @@ export function NativeCyclingMap(props: CyclingMapProps) {
     }
   };
   useEffect(() => {
+    const controller = new AbortController();
+    let current = true;
+    setMapStyle(null);
     setReady(false);
     setError("");
     centered.current = false;
-    timer.current = setTimeout(
-      () =>
-        setError(
-          "El mapa base no respondió. Comprueba tu conexión e inténtalo de nuevo.",
-        ),
-      20000,
-    );
-    return () => clearTimeout(timer.current);
+    userInteracted.current = false;
+    timer.current = setTimeout(() => {
+      controller.abort();
+      setError(
+        "El mapa base no respondió. Comprueba tu conexión e inténtalo de nuevo.",
+      );
+    }, 20000);
+    loadNativeMapStyle(controller.signal)
+      .then((style) => {
+        if (current && !controller.signal.aborted) setMapStyle(style);
+      })
+      .catch((error: unknown) => {
+        if (current && !controller.signal.aborted) {
+          clearTimeout(timer.current);
+          setError(
+            error instanceof Error
+              ? error.message
+              : "No se pudo preparar el mapa.",
+          );
+        }
+      });
+    return () => {
+      current = false;
+      controller.abort();
+      clearTimeout(timer.current);
+    };
   }, [attempt]);
+  useEffect(() => {
+    if (!ready) return;
+    if (wasNavigating.current && !props.navigationMode)
+      camera.current?.zoomTo(15, {
+        pitch: 0,
+        bearing: 0,
+        padding: { top: 0, bottom: 0, left: 0, right: 0 },
+        duration: 0,
+      });
+    wasNavigating.current = !!props.navigationMode;
+  }, [ready, props.navigationMode]);
   // Centrar en la primera posición y por acción explícita, sin seguir al GPS durante el paneo.
   useEffect(() => {
-    if (ready && location && !centered.current) {
+    if (props.navigationMode || props.followLocation) return;
+    if (
+      ready &&
+      location &&
+      (!centered.current ||
+        (!userInteracted.current && !geometry && !destination))
+    ) {
       camera.current?.flyTo({
         center: toPosition(location),
         zoom: 15,
@@ -140,20 +213,63 @@ export function NativeCyclingMap(props: CyclingMapProps) {
       });
       centered.current = true;
     }
-  }, [ready, location]);
+  }, [
+    ready,
+    location,
+    geometry,
+    destination,
+    props.followLocation,
+    props.navigationMode,
+  ]);
   useEffect(() => {
-    if (ready && location && centerRequest)
+    if (ready && location && props.followLocation) {
+      camera.current?.easeTo({
+        center: toPosition(location),
+        zoom: 17,
+        pitch: 40,
+        bearing: props.navigationBearing ?? 0,
+        padding: {
+          top: props.navigationTopInset ?? 150,
+          bottom: 36,
+          left: 16,
+          right: 16,
+        },
+        duration: 800,
+      });
+    }
+  }, [
+    ready,
+    location,
+    props.followLocation,
+    props.navigationBearing,
+    props.navigationTopInset,
+  ]);
+  useEffect(() => {
+    if (ready && location && centerRequest !== lastCenterRequest.current) {
+      userInteracted.current = false;
       camera.current?.flyTo({
         center: toPosition(location),
-        zoom: 15,
+        zoom: props.followLocation ? 17 : 15,
+        pitch: props.followLocation ? 40 : 0,
+        bearing: props.followLocation ? (props.navigationBearing ?? 0) : 0,
+        padding: props.followLocation
+          ? {
+              top: props.navigationTopInset ?? 150,
+              bottom: 36,
+              left: 16,
+              right: 16,
+            }
+          : { top: 0, bottom: 0, left: 0, right: 0 },
         duration: 650,
       });
-  }, [ready, centerRequest]);
+      lastCenterRequest.current = centerRequest;
+    }
+  }, [ready, centerRequest, location]);
   useEffect(() => {
-    if (ready) fit();
-  }, [ready, geometry, fitRequest]);
+    if (ready && (initialFocus === "route" || fitRequest > 0)) fit();
+  }, [ready, geometry, fitRequest, initialFocus]);
   useEffect(() => {
-    if (ready && destination && !geometry)
+    if (ready && destination && !geometry && initialFocus === "route")
       camera.current?.easeTo({
         center: toPosition(destination),
         zoom: 15,
@@ -162,149 +278,195 @@ export function NativeCyclingMap(props: CyclingMapProps) {
   }, [ready, destination]);
   return (
     <View style={[styles.mapFrame, fill ? { flex: 1 } : { height }]}>
-      <MapLibreMap
-        key={attempt}
-        style={{ flex: 1 }}
-        mapStyle={styleUrl}
-        androidView="texture"
-        attribution
-        compass
-        attributionPosition={{ bottom: 30, left: 8 }}
-        onDidFinishLoadingMap={() => {
-          clearTimeout(timer.current);
-          setReady(true);
-          setError("");
-        }}
-        onDidFailLoadingMap={() => {
-          clearTimeout(timer.current);
-          setReady(false);
-          setError(
-            "No se pudo cargar el mapa de MapTiler. Revisa la conexión y la configuración del mapa.",
-          );
-        }}
-        onPress={(event) => {
-          const [longitude, latitude] = event.nativeEvent.lngLat;
-          const point = { latitude, longitude };
-          if (validCoordinate(point)) onPick?.(point);
-        }}
-        onLongPress={(event) => {
-          const [longitude, latitude] = event.nativeEvent.lngLat;
-          const point = { latitude, longitude };
-          if (validCoordinate(point)) onPick?.(point);
-        }}
-        onRegionDidChange={(event) =>
-          onBoundsChange?.(event.nativeEvent.bounds)
-        }
-      >
-        <Camera ref={camera} initialViewState={{ center: [0, 0], zoom: 1 }} />
-        {infrastructure && (
-          <GeoJSONSource
-            id="osm-cycleways"
-            data={infrastructure}
-            onPress={(event) => {
-              event.stopPropagation();
-              const id = event.nativeEvent.features[0]?.id;
-              const feature = infrastructure.features.find((f) => f.id === id);
-              if (feature) onLanePress?.(feature);
-            }}
-          >
-            <Layer
-              id="cycleways-exclusive"
-              type="line"
-              filter={[
-                "in",
-                ["get", "kind"],
-                ["literal", ["cycleway", "track"]],
-              ]}
-              paint={{ "line-color": colors.greenDark, "line-width": 5 }}
-            />
-            <Layer
-              id="cycleways-lanes"
-              type="line"
-              filter={["==", ["get", "kind"], "lane"]}
-              paint={{
-                "line-color": "#608D20",
-                "line-width": 4,
-                "line-dasharray": [3, 1],
+      {mapStyle && (
+        <MapLibreMap
+          key={attempt}
+          style={{ flex: 1 }}
+          mapStyle={mapStyle}
+          androidView="texture"
+          attribution
+          compass
+          attributionPosition={{ bottom: 30, left: 8 }}
+          onDidFinishLoadingStyle={() => {
+            // El estilo ya permite usar la cámara. No esperar a todas las
+            // teselas de la vista mundial inicial para centrar el GPS.
+            clearTimeout(timer.current);
+            setReady(true);
+            setError("");
+          }}
+          onDidFinishLoadingMap={() => {
+            clearTimeout(timer.current);
+            setReady(true);
+            setError("");
+          }}
+          onDidFailLoadingMap={() => {
+            clearTimeout(timer.current);
+            setReady(false);
+            setError(
+              "No se pudo cargar el mapa de MapTiler. Revisa la conexión y la configuración del mapa.",
+            );
+          }}
+          onPress={(event) => {
+            userInteracted.current = true;
+            const [longitude, latitude] = event.nativeEvent.lngLat;
+            const point = { latitude, longitude };
+            if (validCoordinate(point)) onPick?.(point);
+          }}
+          onLongPress={(event) => {
+            userInteracted.current = true;
+            const [longitude, latitude] = event.nativeEvent.lngLat;
+            const point = { latitude, longitude };
+            if (validCoordinate(point)) onPick?.(point);
+          }}
+          onRegionWillChange={(event) => {
+            if (event.nativeEvent.userInteraction) {
+              userInteracted.current = true;
+              props.onFollowChange?.(false);
+            }
+          }}
+          onRegionDidChange={(event) =>
+            onBoundsChange?.(event.nativeEvent.bounds)
+          }
+        >
+          <Camera ref={camera} initialViewState={initialView} />
+          {infrastructure && (
+            <GeoJSONSource
+              id="osm-cycleways"
+              data={infrastructure}
+              onPress={(event) => {
+                event.stopPropagation();
+                const id = event.nativeEvent.features[0]?.id;
+                const feature = infrastructure.features.find(
+                  (f) => f.id === id,
+                );
+                if (feature) onLanePress?.(feature);
               }}
-            />
-            <Layer
-              id="cycleways-shared"
-              type="line"
-              filter={[
-                "in",
-                ["get", "kind"],
-                ["literal", ["shared", "designated"]],
-              ]}
-              paint={{
-                "line-color": "#99701C",
-                "line-width": 3,
-                "line-dasharray": [1, 2],
-              }}
-            />
-          </GeoJSONSource>
-        )}
-        {!!historic.features.length && (
-          <GeoJSONSource id="verified-routes" data={historic}>
-            <Layer
-              id="verified-routes-line"
-              type="line"
-              paint={{ "line-color": colors.black, "line-width": 4 }}
-            />
-          </GeoJSONSource>
-        )}
-        {routeFeature && (
-          <GeoJSONSource id="planned-route" data={routeFeature}>
-            <Layer
-              id="planned-route-outline"
-              type="line"
-              layout={{ "line-cap": "round", "line-join": "round" }}
-              paint={{ "line-color": colors.white, "line-width": 9 }}
-            />
-            <Layer
-              id="planned-route-line"
-              type="line"
-              layout={{ "line-cap": "round", "line-join": "round" }}
-              paint={{ "line-color": colors.black, "line-width": 5 }}
-            />
-          </GeoJSONSource>
-        )}
-        {track && (
-          <GeoJSONSource id="recorded-track" data={track}>
-            <Layer
-              id="recorded-track-line"
-              type="line"
-              paint={{ "line-color": colors.greenDark, "line-width": 5 }}
-            />
-          </GeoJSONSource>
-        )}
-        {location && validCoordinate(location) && (
-          <Marker id="current-location" lngLat={toPosition(location)}>
-            <View
-              accessibilityLabel="Tu ubicación actual"
-              style={styles.location}
-            />
-          </Marker>
-        )}
-        {origin && (
-          <Marker id="origin" anchor="bottom" lngLat={toPosition(origin)}>
-            <View style={styles.pin}>
-              <Text style={styles.pinText}>A</Text>
-            </View>
-          </Marker>
-        )}
-        {destination && (
-          <Marker
-            id="destination"
-            anchor="bottom"
-            lngLat={toPosition(destination)}
-          >
-            <View style={[styles.pin, { backgroundColor: colors.black }]}>
-              <Text style={[styles.pinText, { color: colors.white }]}>B</Text>
-            </View>
-          </Marker>
-        )}
-      </MapLibreMap>
+            >
+              <Layer
+                id="cycleways-exclusive"
+                type="line"
+                filter={[
+                  "in",
+                  ["get", "kind"],
+                  ["literal", ["cycleway", "track"]],
+                ]}
+                paint={{ "line-color": colors.greenDark, "line-width": 5 }}
+              />
+              <Layer
+                id="cycleways-lanes"
+                type="line"
+                filter={["==", ["get", "kind"], "lane"]}
+                paint={{
+                  "line-color": "#608D20",
+                  "line-width": 4,
+                  "line-dasharray": [3, 1],
+                }}
+              />
+              <Layer
+                id="cycleways-shared"
+                type="line"
+                filter={[
+                  "in",
+                  ["get", "kind"],
+                  ["literal", ["shared", "designated"]],
+                ]}
+                paint={{
+                  "line-color": "#99701C",
+                  "line-width": 3,
+                  "line-dasharray": [1, 2],
+                }}
+              />
+            </GeoJSONSource>
+          )}
+          {!!historic.features.length && (
+            <GeoJSONSource id="verified-routes" data={historic}>
+              <Layer
+                id="verified-routes-line"
+                type="line"
+                paint={{ "line-color": colors.black, "line-width": 4 }}
+              />
+            </GeoJSONSource>
+          )}
+          {routeFeature && (
+            <GeoJSONSource id="planned-route" data={routeFeature}>
+              <Layer
+                id="planned-route-outline"
+                type="line"
+                layout={{ "line-cap": "round", "line-join": "round" }}
+                paint={{ "line-color": colors.black, "line-width": 8 }}
+              />
+              <Layer
+                id="planned-route-line"
+                type="line"
+                layout={{ "line-cap": "round", "line-join": "round" }}
+                paint={{ "line-color": colors.green, "line-width": 5 }}
+              />
+            </GeoJSONSource>
+          )}
+          {track && (
+            <GeoJSONSource id="recorded-track" data={track}>
+              <Layer
+                id="recorded-track-line"
+                type="line"
+                paint={{ "line-color": "#176EAC", "line-width": 5 }}
+              />
+            </GeoJSONSource>
+          )}
+          {location && validCoordinate(location) && (
+            <Marker id="current-location" lngLat={toPosition(location)}>
+              <View
+                accessibilityLabel="Tu ubicación actual"
+                style={[
+                  styles.location,
+                  props.followLocation && {
+                    width: 26,
+                    height: 26,
+                    borderRadius: 13,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
+                ]}
+              >
+                {props.followLocation && (
+                  <Text style={{ color: colors.white, fontSize: 13 }}>▲</Text>
+                )}
+              </View>
+            </Marker>
+          )}
+          {origin && (
+            <Marker id="origin" anchor="bottom" lngLat={toPosition(origin)}>
+              <View style={styles.pin}>
+                <Text style={styles.pinText}>A</Text>
+              </View>
+            </Marker>
+          )}
+          {destination && (
+            <Marker
+              id="destination"
+              anchor="bottom"
+              lngLat={toPosition(destination)}
+            >
+              <View style={[styles.pin, { backgroundColor: colors.black }]}>
+                <Text style={[styles.pinText, { color: colors.white }]}>B</Text>
+              </View>
+            </Marker>
+          )}
+          {stopPosition && validCoordinate(stopPosition) && (
+            <Marker
+              id="ride-stop"
+              anchor="bottom"
+              lngLat={toPosition(stopPosition)}
+            >
+              <View
+                accessibilityLabel={props.stopLabel ?? "Fin GPS"}
+                style={[styles.pin, { backgroundColor: "#D57625" }]}
+              >
+                <Text style={[styles.pinText, { color: colors.white }]}>F</Text>
+              </View>
+            </Marker>
+          )}
+        </MapLibreMap>
+      )}
       {!ready && !error && (
         <View pointerEvents="none" style={styles.loading}>
           <ActivityIndicator color={colors.greenDark} />
@@ -377,9 +539,9 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: "#196FC2",
+    backgroundColor: colors.black,
     borderWidth: 3,
-    borderColor: colors.white,
+    borderColor: colors.green,
   },
   pin: {
     width: 30,

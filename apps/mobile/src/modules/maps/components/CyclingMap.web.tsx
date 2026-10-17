@@ -1,9 +1,11 @@
 import React from "react";
 import { Text, View } from "react-native";
 import type { CyclingMapProps } from "../types/map.types";
-import { colors } from "../../../shared/theme/colors";
+import { useThemeColors } from "../../../shared/theme/ThemeContext";
 
 export function CyclingMap({ height = 330, fill }: CyclingMapProps) {
+  const colors = useThemeColors();
+
   return (
     <View
       style={{
@@ -17,7 +19,7 @@ export function CyclingMap({ height = 330, fill }: CyclingMapProps) {
         gap: 8,
       }}
     >
-      <Text style={{ color: colors.black, fontSize: 18, fontWeight: "700" }}>
+      <Text style={{ color: colors.text, fontSize: 18, fontWeight: "700" }}>
         Mapa disponible en la app móvil
       </Text>
       <Text

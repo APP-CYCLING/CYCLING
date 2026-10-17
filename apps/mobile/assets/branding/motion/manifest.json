@@ -1,0 +1,12 @@
+{
+  "dark": {
+    "frames": 16,
+    "duration": 1280,
+    "source": "compact-loader-dark.gif"
+  },
+  "light": {
+    "frames": 24,
+    "duration": 1680,
+    "source": "loading-light.gif"
+  }
+}

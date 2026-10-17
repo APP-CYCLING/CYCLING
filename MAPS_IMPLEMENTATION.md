@@ -1,5 +1,17 @@
 # Mapas y planificación ciclista
 
+## Corrección posterior: ubicación inicial y origen de ruta
+
+Explorar y Pedalear ahora solicitan ubicación de primer plano al abrirse, con el permiso del sistema. La adquisición tiene un límite total de 20 segundos que empieza antes de esperar permisos o servicios. Se intentan una posición conocida reciente (máximo 15 s), una lectura actual con precisión Balanced y un único watcher High; las respuestas tardías se descartan al salir, pasar a segundo plano, reintentar o vencer el plazo. Una lectura actual puede centrar el mapa sin esperar el primer evento del watcher. Los errores nativos, permisos denegados, ubicación desactivada y expiración muestran mensajes, reintento y acceso a Ajustes.
+
+El origen predeterminado es la posición actual, actualizada mientras no se haya confirmado una ruta. Calcular captura ese origen junto con la geometría para que el marcador A no se desplace independientemente del recorrido. El origen manual solo se usa si el usuario lo elige explícitamente; el control de ubicación permite volver al origen GPS. El botón de centrar conserva la solicitud hasta que llegue una posición válida, y Pedalear prioriza la ubicación actual sobre el ajuste inicial al trazado completo.
+
+El mapa admite una posición aproximada del sistema con advertencia de precisión, sin inventar coordenadas ni convertirla en distancia registrada. Se rechazan posiciones de más de 30 s, coordenadas inválidas y precisión peor de 3 km. Para registrar se requiere un fix de hasta 10 s y precisión de 70 m o mejor. El tracker consume los mismos fixes del mapa y no crea otra suscripción. El guardado toma una instantánea coherente de puntos, distancia y duración al detenerse.
+
+Se añadieron regresiones en `scripts/location.test.cjs` para esperas nativas bloqueadas, permisos, posición inicial, precisión aproximada, señal perdida, limpieza de suscripciones tardías y origen actual al calcular. El total es 26 pruebas aprobadas. La validación física del GPS y la cámara en el teléfono sigue pendiente; estos cambios son JavaScript/TypeScript y no requieren cambios de permisos nativos ni de Supabase.
+
+Actualizaciones posteriores a la entrega inicial: el usuario aplicó la migración y se verificaron cuotas, caché y RPC presentes. Las referencias siguientes al bloqueo describen el estado de la entrega inicial. Además, se adaptó Streets v4 para MapLibre Native: se descarga el estilo mediante `map-style.service.ts`, se retira la fuente vacía de atribución conservando sus créditos en una fuente real, y se convierten `text-overlap`/`icon-overlap` a reglas nativas conservadoras. Las 164 capas del estilo se conservan. Las pruebas ahora suman 16/16; queda la comprobación visual y de logs en el dispositivo después de recargar.
+
 ## Estado comprobado — 16 de octubre de 2026
 
 Se implementó el flujo móvil y se desplegaron estas funciones en Supabase Cloud:

@@ -5,6 +5,8 @@ verify_jwt = false
 verify_jwt = false
 [functions.get-bike-lanes]
 verify_jwt = false
+[functions.reverse-location]
+verify_jwt = false
 # JWT verificado explícitamente con auth.getUser en cada función. Compatible
 # con claves publishable y tokens firmados con las claves actuales de Auth.
 # Configuración para futuras operaciones CLI; NO ejecutar `supabase start` si quieres evitar Docker.

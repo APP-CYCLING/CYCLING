@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100%;margin:0;padding:0;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary": "#5b5f5a", "on-primary-fixed": "#0e2000", "primary-fixed-dim": "#9ad85e", "on-secondary-fixed": "#191d18", "tertiary": "#845400", "on-tertiary-fixed": "#2a1800", "surface": "#f5fbf3", "surface-container": "#e9f0e7", "surface-variant": "#dee4dc", "secondary-container": "#e0e4dd", "tertiary-fixed": "#ffddb6", "secondary-fixed-dim": "#c4c8c1", "on-secondary-container": "#616560", "on-tertiary-container": "#805100", "primary-fixed": "#b5f577", "surface-bright": "#f5fbf3", "error-container": "#ffdad6", "on-background": "#171d18", "on-secondary-fixed-variant": "#444843", "surface-container-low": "#eff5ed", "background": "#f5fbf3", "on-error": "#ffffff", "on-tertiary-fixed-variant": "#643f00", "on-secondary": "#ffffff", "primary": "#3a6a00", "on-surface-variant": "#424939", "on-primary": "#ffffff", "on-error-container": "#93000a", "tertiary-fixed-dim": "#ffb95b", "surface-container-lowest": "#ffffff", "on-surface": "#171d18", "primary-container": "#a7e66a", "surface-tint": "#3a6a00", "surface-dim": "#d5dcd4", "outline-variant": "#c2c9b5", "surface-container-highest": "#dee4dc", "on-tertiary": "#ffffff", "surface-container-high": "#e3eae2", "outline": "#727a68", "inverse-surface": "#2b322d", "on-primary-fixed-variant": "#2b5000", "error": "#ba1a1a", "secondary-fixed": "#e0e4dd", "tertiary-container": "#ffcb8b", "inverse-primary": "#9ad85e", "inverse-on-surface": "#ecf3ea", "on-primary-container": "#386700" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "1rem", "space-xl": "2rem", "gutter-mobile": "0.75rem", "gutter": "1rem", "space-xs": "0.25rem", "space-md": "1rem" }, "fontFamily": { "body-sm": ["Inter"], "headline-sm": ["Inter"], "label-sm": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"], "label-lg": ["Inter"], "display-lg-mobile": ["Inter"], "headline-lg-mobile": ["Inter"], "display-lg": ["Inter"], "label-md": ["Inter"], "body-lg": ["Inter"], "metric-nav": ["Inter"] }, "fontSize": { "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "display-lg-mobile": ["36px", { "lineHeight": "40px", "letterSpacing": "-0.025em", "fontWeight": "800" }], "headline-lg-mobile": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "display-lg": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "800" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "metric-nav": ["40px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "800" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="px-gutter h-14 flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Volver" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface hover:bg-surface-container transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="CYCLING Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WjVLu0as060kQ1c_b4Lk05OkU0ck1e18plgFzEklaKshxkJ0vT_6FhItt1s3j85412yacx3K9WOj27tlllO72Z6ft_yM48Uj7fXwH3cBjWgNe2ytGw90Sk2aRhWmXFRNFCVofehgy9svCkX52tda2h8p0PG4p_sti8rIrgSj4RDtmsga-bFdw6JBxkO2hkViEbpO20dMD1u-hTQ70bW0hLgaA6EkrrQSeYPTrAoEcL"/><h1 class="font-headline-sm text-headline-sm text-on-surface ml-space-xs">Pedalear</h1></div><div class="flex items-center gap-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoyZFQbmqD07t2lF3sqyLIfuu-5D0G8T2xTISGrdI68QG2eGlhnGNlraOZKQ5jtJ9W58nF7pqo9ClcpJC-SfLDQM2JOoIZBXfXDgypUHoco7VRsSUxUOvatgJ4fpftuTUZ5LG4QmTQ-Imn_RoA8TrUgDV1V61eTqM1_-P9QhC2evwkBhlGdDcWJVGXAwlRszY0-T3LbGlTyYkTEXkW8Ra19FEKqqwqiQNvc0GiHF4"/></div></div></header><main class="flex-1 w-full pt-14 pb-safe bg-surface flex flex-col"><div class="flex flex-col w-full pb-8">
+<!-- Top App Sub-Bar / Header Action Area -->
+<div class="px-margin pt-4 pb-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Editar Perfil</h2>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-highest transition-colors" onclick="history.back()" type="button">
+        Cancelar
+      </button>
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-sm active:scale-95 transition-all flex items-center gap-1" id="save-top-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Guardar</span>
+</button>
+</div>
+</div>
+<form class="px-margin flex flex-col gap-5" id="edit-profile-form" onsubmit="event.preventDefault();">
+<!-- 1. Hero & Avatar Section -->
+<div class="relative w-full rounded-2xl bg-surface-container-low p-4 shadow-sm flex flex-col items-center">
+<!-- Cover Banner Mini-Visual -->
+<div class="w-full h-24 rounded-xl overflow-hidden relative bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Sunlit urban bike lane at golden hour with soft blurred bokeh of modern city architecture and fresh green foliage, warm cinematic lighting, minimal high-end cycling vibe, 8k crisp details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnz1BaJoVMy6zB7fm_ECuGxnD3pnk5H-cuKZUyrXIypWi0jN4rqkFLhOQ_oDmsz09sJD1M8uEf-eN4Kh6SQVw7itNPFvKfEzYNuV08pBfe8RID83Sjk-dfe5OYHyEXaMna2uwkA2s8aC2OcCFfGPcdkcOJnq_EZ_9GlN7X5jXwLdyU0bIHHQ6piwqP2K-RuGBujMBkmjxahcRRpikcixSjOBUi88WD4T6UxpqRuLw"/>
+<button aria-label="Cambiar foto de portada" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-surface-container-lowest/90 backdrop-blur-md flex items-center justify-center text-on-surface shadow-sm active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</button>
+</div>
+<!-- Avatar with Float Badges -->
+<div class="relative -mt-12 flex flex-col items-center">
+<div class="relative w-24 h-24 rounded-full p-1 bg-surface-container-lowest shadow-md">
+<img class="w-full h-full object-cover rounded-full" data-alt="Athletic Latin woman cyclist named Camila Valdivia wearing a sleek matte olive green bicycle helmet, confident warm smile, outdoor natural daylight, crisp modern sports photography, professional gear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPM-bVKAHXf42ZR1dwwshz6aPv-fNLPpJ8pWl5yh20Z5GGdQkLSXRDUx-B1nI33cGHBq97pGxODDvxogH7h5a98m7dcfGWYxjwH-0ISkOaAIQr-ykiunmwqLJMBOjlKMtvPEORswJaKkp_WDLXKLa9Mw1TvFWQ23dJWLno6c6zgIUDO_Y8Q_CysIdKXyEGUPQynAQDVxAiL6PToaR9spV9wGB3UiigzRKkMp8X6IQ"/>
+<button aria-label="Cambiar foto de perfil" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-md active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined text-[17px]">edit</span>
+</button>
+</div>
+<div class="mt-2.5 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>Ciclista Verificada • Lima Commuter</span>
+</div>
+</div>
+</div>
+<!-- 2. Información Personal y de Usuario -->
+<div class="flex flex-col gap-3.5">
+<div class="flex items-center gap-2 px-1">
+<span class="material-symbols-outlined text-[18px] text-primary">person</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Identidad Ciclista</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3.5">
+<!-- Nombre Completo -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="full-name">Nombre y Apellido</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low rounded-xl px-3.5 py-3 text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" id="full-name" type="text" value="Camila Valdivia"/>
+</div>
+</div>
+<!-- Usuario / Handle -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="username">Nombre de usuario</label>
+<div class="relative flex items-center">
+<span class="absolute left-3.5 text-secondary font-body-md text-body-md">@</span>
+<input class="w-full bg-surface-container-low rounded-xl pl-8 pr-3.5 py-3 text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" id="username" type="text" value="camilavelocita"/>
+</div>
+</div>
+<!-- Ciudad y País -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="location">Ubicación principal</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">location_on</span>
+<input class="w-full bg-surface-container-low rounded-xl pl-10 pr-3.5 py-3 text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all" id="location" type="text" value="Lima, Perú"/>
+</div>
+</div>
+<!-- Biografía -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-secondary" for="bio">Biografía</label>
+<span class="font-body-sm text-body-sm text-secondary">104 / 160</span>
+</div>
+<textarea class="w-full bg-surface-container-low rounded-xl p-3 text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none transition-all resize-none" id="bio" rows="3">Ciclista urbana diaria y exploradora de fin de semana en gravel. Promotora de ciclovías seguras.</textarea>
+</div>
+</div>
+</div>
+<!-- 3. Datos de Atleta y Métricas de Rendimiento -->
+<div class="flex flex-col gap-3.5">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">speed</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Métricas de Rendimiento</h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary px-2 py-0.5 rounded-full bg-surface-container">Cálculo Calórico</span>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-4">
+<!-- Modalidad Preferida -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Modalidad de pedaleo preferida</label>
+<div class="flex flex-wrap gap-2" id="modality-chips">
+<button class="modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-primary-container text-on-primary-container shadow-sm flex items-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">directions_bike</span>
+<span>Urbano / Commute</span>
+</button>
+<button class="modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5" type="button">
+<span>Ruta / Carretera</span>
+</button>
+<button class="modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5" type="button">
+<span>Gravel</span>
+</button>
+<button class="modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5" type="button">
+<span>e-Bike</span>
+</button>
+</div>
+</div>
+<!-- Biometría: Peso y Altura -->
+<div class="grid grid-cols-2 gap-3">
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="weight">Peso corporal</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low rounded-xl pl-3.5 pr-10 py-3 text-on-surface font-headline-sm text-headline-sm focus:bg-surface-container-lowest focus:outline-none transition-all" id="weight" type="text" value="58"/>
+<span class="absolute right-3.5 font-label-md text-label-md text-secondary">kg</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="height">Estatura</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low rounded-xl pl-3.5 pr-10 py-3 text-on-surface font-headline-sm text-headline-sm focus:bg-surface-container-lowest focus:outline-none transition-all" id="height" type="text" value="168"/>
+<span class="absolute right-3.5 font-label-md text-label-md text-secondary">cm</span>
+</div>
+</div>
+</div>
+<!-- Frecuencia semanal -->
+<div class="flex flex-col gap-1">
+<label class="font-label-md text-label-md text-secondary" for="frequency">Frecuencia semanal habitual</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px]">calendar_today</span>
+<select class="w-full bg-surface-container-low rounded-xl pl-10 pr-8 py-3 text-on-surface font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none appearance-none transition-all" id="frequency">
+<option value="1-2">1 - 2 días por semana</option>
+<option value="3-4">3 - 4 días por semana</option>
+<option selected="" value="4-5">4 - 5 días por semana</option>
+<option value="daily">Diario (6 - 7 días)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 pointer-events-none text-secondary text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. Bicicletas y Equipamiento (Garage Virtual) -->
+<div class="flex flex-col gap-3.5">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">pedal_bike</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Garage Virtual</h3>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">1 activa</span>
+</div>
+<!-- Tarjeta Bicicleta Principal -->
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3 relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">directions_bike</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm">Bicicleta Principal</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface mt-0.5">Specialized Sirrus X 4.0</h4>
+<p class="font-body-sm text-body-sm text-secondary">Gravel / Commute Híbrida</p>
+</div>
+</div>
+<button aria-label="Editar bicicleta" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-secondary hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-2">
+<div class="bg-surface-container-low rounded-xl p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">scale</span>
+<div>
+<p class="font-body-sm text-body-sm text-secondary">Peso bici</p>
+<p class="font-label-md text-label-md text-on-surface">10.2 kg</p>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-2.5 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">straighten</span>
+<div>
+<p class="font-body-sm text-body-sm text-secondary">Odómetro</p>
+<p class="font-label-md text-label-md text-on-surface">2.845 km</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Botón Agregar Bicicleta -->
+<button class="w-full py-3 rounded-2xl bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">add_circle</span>
+<span>+ Agregar otra bicicleta al garage</span>
+</button>
+</div>
+<!-- 5. Zonas de Privacidad y Anonimización -->
+<div class="flex flex-col gap-3.5">
+<div class="flex items-center gap-2 px-1">
+<span class="material-symbols-outlined text-[18px] text-primary">shield</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Privacidad y Rutas Seguras</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-4">
+<!-- Privacy Buffer Switch -->
+<div class="flex items-center justify-between gap-3">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg text-on-surface">Ocultar inicio y fin (500m)</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+              Difumina automáticamente el punto de partida y llegada para proteger tu domicilio y centro de trabajo.
+            </p>
+</div>
+<!-- Interactive Custom Toggle -->
+<button aria-checked="true" class="relative inline-flex h-8 w-13 min-w-[52px] cursor-pointer rounded-full bg-inverse-surface p-1 transition-colors" id="toggle-privacy" role="switch" type="button">
+<span class="pointer-events-none inline-flex items-center justify-center h-6 w-6 transform translate-x-5 rounded-full bg-surface-container-lowest shadow-sm transition-transform" id="toggle-thumb">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</span>
+</button>
+</div>
+<div class="h-px bg-surface-container w-full"></div>
+<!-- Selector de Visibilidad de Perfil -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-secondary">Visibilidad del perfil</label>
+<div class="grid grid-cols-2 gap-2" id="visibility-selector">
+<button class="visibility-btn py-2.5 px-3 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">public</span>
+<span>Público</span>
+</button>
+<button class="visibility-btn py-2.5 px-3 rounded-xl bg-surface-container-low text-secondary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">group</span>
+<span>Solo seguidores</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. Acciones Finales Inferiores -->
+<div class="pt-2 flex flex-col gap-3">
+<button class="w-full h-14 rounded-full bg-primary-container text-on-primary-container font-label-lg text-label-lg font-bold shadow-md active:scale-[0.98] transition-transform flex items-center justify-center gap-2" id="save-main-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Guardar cambios</span>
+</button>
+<button class="w-full py-3 rounded-full text-secondary hover:text-on-surface font-label-md text-label-md transition-colors text-center" onclick="history.back()" type="button">
+        Descartar y volver
+      </button>
+</div>
+</form>
+<!-- Interactive Feedback Toast (Hidden by default) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-4 transition-all duration-300" id="save-toast">
+<div class="bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]">verified</span>
+<span class="font-label-md text-label-md">Perfil ciclista actualizado</span>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interactions for interactive toggle & chips
+  (function() {
+    // 1. Privacy Toggle Interaction
+    const toggleBtn = document.getElementById('toggle-privacy');
+    const toggleThumb = document.getElementById('toggle-thumb');
+    let isPrivacyOn = true;
+
+    if (toggleBtn && toggleThumb) {
+      toggleBtn.addEventListener('click', () => {
+        isPrivacyOn = !isPrivacyOn;
+        toggleBtn.setAttribute('aria-checked', isPrivacyOn);
+        if (isPrivacyOn) {
+          toggleBtn.className = 'relative inline-flex h-8 w-13 min-w-[52px] cursor-pointer rounded-full bg-inverse-surface p-1 transition-colors';
+          toggleThumb.className = 'pointer-events-none inline-flex items-center justify-center h-6 w-6 transform translate-x-5 rounded-full bg-surface-container-lowest shadow-sm transition-transform';
+        } else {
+          toggleBtn.className = 'relative inline-flex h-8 w-13 min-w-[52px] cursor-pointer rounded-full bg-surface-container-highest p-1 transition-colors';
+          toggleThumb.className = 'pointer-events-none inline-flex items-center justify-center h-6 w-6 transform translate-x-0 rounded-full bg-surface-container-lowest shadow-sm transition-transform';
+        }
+      });
+    }
+
+    // 2. Modality Chips Selection
+    const chipContainer = document.getElementById('modality-chips');
+    if (chipContainer) {
+      const chips = chipContainer.querySelectorAll('.modality-chip');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          chips.forEach(c => {
+            c.className = 'modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5';
+          });
+          chip.className = 'modality-chip px-3.5 py-2 rounded-full font-label-md text-label-md bg-primary-container text-on-primary-container shadow-sm flex items-center gap-1.5 transition-all';
+        });
+      });
+    }
+
+    // 3. Visibility Selector
+    const visContainer = document.getElementById('visibility-selector');
+    if (visContainer) {
+      const visButtons = visContainer.querySelectorAll('.visibility-btn');
+      visButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          visButtons.forEach(b => {
+            b.className = 'visibility-btn py-2.5 px-3 rounded-xl bg-surface-container-low text-secondary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-all';
+          });
+          btn.className = 'visibility-btn py-2.5 px-3 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm transition-all';
+        });
+      });
+    }
+
+    // 4. Save Feedback Simulation
+    const saveTopBtn = document.getElementById('save-top-btn');
+    const saveMainBtn = document.getElementById('save-main-btn');
+    const toast = document.getElementById('save-toast');
+
+    function triggerSaveToast() {
+      if (!toast) return;
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2400);
+    }
+
+    if (saveTopBtn) saveTopBtn.addEventListener('click', triggerSaveToast);
+    if (saveMainBtn) saveMainBtn.addEventListener('click', triggerSaveToast);
+  })();
+</script></main></body></html>
