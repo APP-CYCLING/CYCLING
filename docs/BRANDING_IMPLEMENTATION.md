@@ -8,7 +8,7 @@ Los recursos necesarios están en `apps/mobile/assets/branding/`. Se retuvieron 
 
 ## Identidad y tema del teléfono
 
-- `ThemeProvider` sigue `useColorScheme`, incluidas modificaciones del tema con la aplicación abierta. Si el sistema no comunica una preferencia, se usa oscuro. Hay una única suscripción a la apariencia, compartida por los componentes.
+- `ThemeProvider` utiliza una preferencia local de CYCLING: claro por defecto y oscuro al activar el interruptor en Perfil → Configuración y seguridad. El tema del teléfono no modifica esta selección. Véase [apariencia](APPEARANCE.md).
 - Colores oficiales: lima `#A7F55B`, negro `#0F1210` y blanco `#FFFFFF`. Fondos, superficies, bordes, texto, errores, formularios, encabezados, pestañas y modales tienen variantes clara y oscura. Los botones lima conservan texto negro por contraste.
 - `BrandLogo` conserva los PNG, proporciones y tipografía originales. Admite horizontal, emblema y monocromático; la apariencia se selecciona según el tema o un fondo explícito.
 - El PNG horizontal que el kit llama «sobre fondo claro» tiene letras blancas. Para mantener la C verde/blanca y las letras legibles, en tema claro se componen los **dos PNG oficiales**: tipografía de la variante negra y símbolo de la variante de color. Sus máscaras alfa son idénticas; la separación transparente está entre x=653 y x=674 sobre un lienzo de 2172 px. El recorte de presentación termina al 30,5 %, dentro de ese espacio. No se redibuja el logo ni se sustituye su fuente.
@@ -20,7 +20,7 @@ No se modifica el estilo cartográfico de MapTiler: el mapa conserva su presenta
 
 | Momento | Implementación |
 | --- | --- |
-| Splash nativo | `expo-splash-screen` SDK 57, imagen PNG estática, variante oscura oficial y alternativa clara según el sistema. El recorte central de `03_SPLASH` conserva símbolo y tipografía, excluyendo la barra ilustrativa de progreso. |
+| Splash nativo | `expo-splash-screen` SDK 57, imagen PNG estática y fondo claro fijo, independiente del teléfono. El recorte central de `03_SPLASH` conserva símbolo y tipografía, excluyendo la barra ilustrativa de progreso. |
 | Inicialización React Native | `StartupScreen`: logo oficial, texto nativo, scroll para pantallas pequeñas/tamaño de texto ampliado, tema y loader. Se mantienen el límite de espera de fuentes y la recuperación de sesión existentes. El splash se oculta al disponer de contenido nativo visible. |
 | Carga interna | `BrandLoader`, reutilizado por `Busy` y por el arranque. No presenta porcentajes ficticios. |
 
@@ -57,7 +57,7 @@ Al activar reducción de movimiento se muestra un emblema estático. Se escuchan
 | Horizontal | 2172×724 | Proporción 3:1, sin modificar tipografía. |
 | Emblemas | 1254×1254 | Proporción 1:1 y transparencia conservada. |
 
-`app.json` conserva `com.cycling.app`, slug, scheme, proyecto EAS y permisos. La etiqueta visible pasa a CYCLING; `userInterfaceStyle` es `automatic`. Solo se añadió la dependencia nativa necesaria `expo-splash-screen ~57.0.10`; se mantiene Expo SDK 57. `eas.json` se revisó y no se modificó.
+La configuración compartida de `app.json` mantiene el branding y Expo SDK 57; `userInterfaceStyle` ahora es `light`. `app.config.js` selecciona Cycling Dev (`com.cycling.app.dev`) o Cycling Preview (`com.cycling.app`) según el perfil de `eas.json`, manteniendo el proyecto EAS. Véanse [variantes de compilación](BUILD_VARIANTS.md), [apariencia](APPEARANCE.md) y [permisos de grabación en segundo plano](BACKGROUND_RECORDING.md) para los cambios posteriores a la integración inicial del branding.
 
 No hay notificaciones implementadas en el proyecto. No se instaló un SDK ni se cambió esa funcionalidad; sus iconos oficiales siguen disponibles en el kit original. El icono monocromático lo utiliza el launcher en sistemas compatibles cuando el usuario activa iconos temáticos.
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -14,13 +14,16 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import type { LaneKind } from "@cycling/contracts";
+import {
+  RouteAlternativesSelector,
+  RouteSelectionSummary,
+} from "../../route-planner/components/RouteAlternativesSelector";
 import { CyclingMap } from "./CyclingMap";
 import type { useMapPlanner } from "../hooks/useMapPlanner";
 import {
   AppText,
   Chip,
   IconButton,
-  MetricTile,
   ScreenHeader,
 } from "../../../shared/components/DesignSystem";
 import { Notice, PrimaryButton } from "../../../shared/components/UI";
@@ -33,6 +36,7 @@ import { fonts } from "../../../shared/theme/typography";
 import { useFontFamily } from "../../../shared/theme/FontContext";
 type Props = { controller: ReturnType<typeof useMapPlanner> };
 const labels: Record<LaneKind, string> = {
+  unknown: "Infraestructura sin confirmar",
   cycleway: "Vía ciclista (OSM)",
   track: "Pista separada",
   lane: "Carril ciclista",
@@ -48,6 +52,23 @@ export function PlannerLayout({ controller: c }: Props) {
   const [layoutHeight, setLayoutHeight] = useState(height - 140);
   const mapAndSheetHeight = Math.max(160, layoutHeight - 66);
   const planning = !!c.planner.destination;
+  const fitPadding = useMemo(
+    () => ({
+      top: 100,
+      bottom: c.planner.optionsOpen ? Math.max(55, height * 0.22) : 55,
+      left: 30,
+      right: 30,
+    }),
+    [c.planner.optionsOpen, height],
+  );
+  const alternativeGeometries = useMemo(
+    () =>
+      c.planner.alternatives?.options
+        .filter((option) => !option.modes.includes(c.planner.selectedRouteMode))
+        .map((option) => option.route.geometry),
+    [c.planner.alternatives, c.planner.selectedRouteMode],
+  );
+  const startSelected = c.begin;
   const clear = () => {
     c.setQuery("");
     c.planner.select(null);
@@ -86,9 +107,11 @@ export function PlannerLayout({ controller: c }: Props) {
           origin={c.displayedOrigin}
           destination={c.planner.destination?.coordinate}
           geometry={c.planner.route?.geometry}
+          alternativeGeometries={alternativeGeometries}
           infrastructure={c.lanes.data}
           centerRequest={c.centerRequest}
           fitRequest={c.fitRequest}
+          fitPadding={fitPadding}
           onPick={c.pick}
           onBoundsChange={c.setBounds}
           onLanePress={c.setLane}
@@ -151,6 +174,29 @@ export function PlannerLayout({ controller: c }: Props) {
             </ScrollView>
           )}
           {!!c.search.error && <Notice message={c.search.error} />}
+          {planning && (
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <Chip
+                icon="bicycle-outline"
+                label="Mostrar ciclovías"
+                active={c.showLanes}
+                onPress={() => {
+                  c.setShowLanes(!c.showLanes);
+                  c.setLane(null);
+                }}
+              />
+              <Chip
+                icon="pin-outline"
+                label="Cambiar origen"
+                active={c.target === "origin"}
+                onPress={() => {
+                  c.setTarget("origin");
+                  c.planner.cancel();
+                  Keyboard.dismiss();
+                }}
+              />
+            </View>
+          )}
           {!!c.search.error && (
             <PrimaryButton
               title="Reintentar búsqueda"
@@ -166,7 +212,7 @@ export function PlannerLayout({ controller: c }: Props) {
             >
               <Chip
                 icon="bicycle-outline"
-                label="Ciclovías"
+                label="Mostrar ciclovías"
                 active={c.showLanes}
                 onPress={() => {
                   c.setShowLanes(!c.showLanes);
@@ -220,7 +266,11 @@ export function PlannerLayout({ controller: c }: Props) {
       <ScrollView
         style={[
           s.sheet,
-          { maxHeight: mapAndSheetHeight * (planning ? 0.58 : 0.42) },
+          {
+            maxHeight:
+              mapAndSheetHeight *
+              (planning ? (c.planner.route ? 0.32 : 0.46) : 0.42),
+          },
         ]}
         contentContainerStyle={s.sheetContent}
         keyboardShouldPersistTaps="handled"
@@ -229,77 +279,75 @@ export function PlannerLayout({ controller: c }: Props) {
         <View style={s.handle} />
         {planning ? (
           <>
-            <View style={s.waypoints}>
-              <View style={s.pointRow}>
-                <View style={s.originDot} />
-                <AppText weight="medium" style={{ flex: 1, fontSize: 12 }}>
-                  {originLabel}
-                </AppText>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => {
-                    c.setTarget("origin");
-                    c.planner.cancel();
-                    Keyboard.dismiss();
-                  }}
-                  style={s.clear}
-                >
-                  <AppText
-                    weight="bold"
-                    style={{ color: colors.greenDark, fontSize: 11 }}
-                  >
-                    Cambiar
+            {!c.planner.route && (
+              <View style={s.waypoints}>
+                <View style={s.pointRow}>
+                  <View style={s.originDot} />
+                  <AppText weight="medium" style={{ flex: 1, fontSize: 12 }}>
+                    {originLabel}
                   </AppText>
-                </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => {
+                      c.setTarget("origin");
+                      c.planner.cancel();
+                      Keyboard.dismiss();
+                    }}
+                    style={s.clear}
+                  >
+                    <AppText
+                      weight="bold"
+                      style={{ color: colors.greenDark, fontSize: 11 }}
+                    >
+                      Cambiar
+                    </AppText>
+                  </Pressable>
+                </View>
+                <View style={s.connector} />
+                <View style={s.pointRow}>
+                  <Ionicons
+                    name="location"
+                    size={19}
+                    color={colors.greenDark}
+                  />
+                  <AppText
+                    numberOfLines={2}
+                    weight="bold"
+                    style={{ flex: 1, fontSize: 13 }}
+                  >
+                    {c.planner.destination?.label}
+                  </AppText>
+                </View>
               </View>
-              <View style={s.connector} />
-              <View style={s.pointRow}>
-                <Ionicons name="location" size={19} color={colors.greenDark} />
-                <AppText
-                  numberOfLines={2}
-                  weight="bold"
-                  style={{ flex: 1, fontSize: 13 }}
-                >
-                  {c.planner.destination?.label}
-                </AppText>
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 10,
-              }}
-            >
-              <AppText weight="heavy" style={{ fontSize: 20 }}>
-                Tu trayecto
-              </AppText>
-              <Chip icon="bicycle-outline" label="Bicicleta" active />
-            </View>
+            )}
             {c.planner.route && (
-              <View style={s.metrics}>
-                <MetricTile
-                  value={(c.planner.route.distanceMeters / 1000).toFixed(1)}
-                  label="KILÓMETROS"
-                  icon="navigate-outline"
-                />
-                <MetricTile
-                  value={`≈ ${Math.max(1, Math.round(c.planner.route.durationSeconds / 60))}`}
-                  label="MINUTOS"
-                  icon="time-outline"
-                />
-                <MetricTile
-                  value="—"
-                  label="DESNIVEL SIN DATOS"
-                  icon="trending-up-outline"
-                />
-              </View>
+              <RouteSelectionSummary
+                route={c.planner.route}
+                mode={c.planner.selectedRouteMode}
+              />
             )}
             {!!c.planner.error && <Notice message={c.planner.error} />}
             {c.planner.route ? (
               <>
-                <PrimaryButton title="Iniciar ruta →" onPress={c.begin} />
+                <View style={{ flexDirection: "row", gap: 8 }}>
+                  <View style={{ flex: 1 }}>
+                    <PrimaryButton
+                      title="Cambiar ruta"
+                      outline
+                      onPress={c.planner.openOptions}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <PrimaryButton
+                      title="Iniciar ruta →"
+                      onPress={startSelected}
+                      disabled={
+                        c.planner.optionStates[c.planner.selectedRouteMode]
+                          .status !== "ready"
+                      }
+                    />
+                  </View>
+                </View>
                 <Pressable
                   accessibilityRole="button"
                   disabled={c.planner.loading || !c.origin}
@@ -315,7 +363,7 @@ export function PlannerLayout({ controller: c }: Props) {
                     style={{ color: colors.greenDark, fontSize: 12 }}
                   >
                     {c.planner.loading
-                      ? "Recalculando…"
+                      ? "Completando alternativas…"
                       : "Recalcular desde el origen actual"}
                   </AppText>
                 </Pressable>
@@ -428,15 +476,33 @@ export function PlannerLayout({ controller: c }: Props) {
               />
             )}
             <AppText style={s.legend}>
-              Verde: vía/pista · Discontinuo: carril · Ocre: compartido · Lima
-              con borde negro: ruta
+              Verde/amarillo: segregada · Verde discontinuo: carril · Ocre:
+              compartida · Gris: sin confirmar · Azul: ruta
             </AppText>
           </>
         )}
         {c.lane && (
           <View style={s.waypoints}>
             <AppText weight="bold">{c.lane.properties.name}</AppText>
-            <AppText>{labels[c.lane.properties.kind]}</AppText>
+            <AppText>
+              {c.lane.properties.infrastructure === "shared"
+                ? "Vía compartida; no es una ciclovía exclusiva"
+                : c.lane.properties.infrastructure === "unknown"
+                  ? "Infraestructura sin confirmar"
+                  : labels[c.lane.properties.kind]}
+            </AppText>
+            {c.lane.properties.geometryBasis === "visual_offset" && (
+              <AppText style={s.caption}>
+                Desplazamiento visual según el lado OSM; no es una geometría
+                física independiente.
+              </AppText>
+            )}
+            {c.lane.properties.geometryBasis === "attribute" && (
+              <AppText style={s.caption}>
+                OSM registra un atributo de la calle sin geometría o lado
+                suficiente para localizar la infraestructura con precisión.
+              </AppText>
+            )}
             <AppText style={s.caption}>
               Superficie: {c.lane.properties.tags.surface ?? "sin datos"} ·
               Separación: {c.lane.properties.tags.segregated ?? "sin datos"}
@@ -444,6 +510,19 @@ export function PlannerLayout({ controller: c }: Props) {
           </View>
         )}
       </ScrollView>
+      <RouteAlternativesSelector
+        visible={c.planner.optionsOpen}
+        onClose={c.planner.closeOptions}
+        alternatives={c.planner.alternatives}
+        selected={c.planner.route}
+        selectedMode={c.planner.selectedRouteMode}
+        optionStates={c.planner.optionStates}
+        onSelect={(id) => {
+          c.planner.selectAlternative(id);
+          c.setFitRequest((value) => value + 1);
+        }}
+        onStart={startSelected}
+      />
     </KeyboardAvoidingView>
   );
 }

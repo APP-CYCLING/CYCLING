@@ -89,7 +89,15 @@ export function RememberEmail({
     </Pressable>
   );
 }
-export function SocialOptions({ register }: { register: boolean }) {
+export function SocialOptions({
+  register,
+  busy = false,
+  onGoogle,
+}: {
+  register: boolean;
+  busy?: boolean;
+  onGoogle?: () => void;
+}) {
   const colors = useThemeColors();
   const s = useThemedStyles(createStyles);
 
@@ -113,9 +121,16 @@ export function SocialOptions({ register }: { register: boolean }) {
           <Pressable
             key={provider}
             accessibilityRole="button"
-            accessibilityLabel={`${provider}: próximamente`}
-            accessibilityState={{ disabled: true }}
-            disabled
+            accessibilityLabel={
+              provider === "Google"
+                ? "Continuar con Google"
+                : `${provider}: próximamente`
+            }
+            accessibilityState={{
+              disabled: provider !== "Google" || busy || !onGoogle,
+            }}
+            disabled={provider !== "Google" || busy || !onGoogle}
+            onPress={provider === "Google" ? onGoogle : undefined}
             style={s.socialButton}
           >
             {provider === "Strava" ? (
@@ -138,7 +153,7 @@ export function SocialOptions({ register }: { register: boolean }) {
       <AppText
         style={{ textAlign: "center", color: colors.muted, fontSize: 11 }}
       >
-        Acceso social: próximamente.
+        Strava y Apple: próximamente.
       </AppText>
     </View>
   );

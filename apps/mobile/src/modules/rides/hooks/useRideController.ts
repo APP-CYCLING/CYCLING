@@ -12,11 +12,26 @@ import {
 import { automaticRideName, savedRideName } from "../utils/ride-name";
 import { useAuth } from "../../auth/context/AuthContext";
 import { useUserLocation } from "../../geolocation/hooks/useUserLocation";
-import { canRecordFix } from "../../geolocation/utils/location-policy";
+import {
+  canRecordFix,
+  isFreshFix,
+} from "../../geolocation/utils/location-policy";
 export function useRideController() {
-  const gps = useUserLocation(),
-    tracker = useRideTracker(gps.fix, gps.focused),
-    { user } = useAuth();
+  const { user } = useAuth();
+  const tracker = useRideTracker(user?.id);
+  const foregroundGps = useUserLocation(!tracker.active);
+  const recordingFix =
+    tracker.active && isFreshFix(tracker.lastFix) ? tracker.lastFix : null;
+  const gps = tracker.active
+    ? {
+        ...foregroundGps,
+        fix: recordingFix,
+        position: recordingFix?.coordinate ?? null,
+        loading: !recordingFix,
+        error: "",
+        status: recordingFix ? ("ready" as const) : ("loading" as const),
+      }
+    : foregroundGps;
   const [saving, setSaving] = useState(false),
     [saved, setSaved] = useState(false),
     [centerRequest, setCenterRequest] = useState(0);
@@ -24,14 +39,13 @@ export function useRideController() {
     [rideName, setRideName] = useState(""),
     [automaticName, setAutomaticName] = useState(""),
     [saveError, setSaveError] = useState("");
-  const plan = usePlannedRide(user?.id),
+  const selectedPlan = usePlannedRide(user?.id),
     { start } = useLocalSearchParams<{ start?: string }>();
+  const plan = tracker.started ? tracker.plan : selectedPlan;
   const lastStart = useRef<string | undefined>(undefined),
     pending = useRef<CreateRideInput | null>(null),
     inFlight = useRef(false),
     mounted = useRef(true);
-  const recordingDestination = useRef<string | null>(null);
-  const recordingPlan = useRef(plan);
   const [photos, setPhotos] = useState<DraftPhoto[]>([]);
   const savedId = useRef<string | null>(null),
     uploadedPhotos = useRef(new Set<string>());
@@ -41,10 +55,20 @@ export function useRideController() {
       mounted.current = false;
     };
   }, []);
-  const finish = () => {
+  const finish = async () => {
     if (inFlight.current || saved) return;
-    const stopped = tracker.stop();
+    let stopped: Awaited<ReturnType<typeof tracker.stop>>;
+    try {
+      stopped = await tracker.stop();
+    } catch (error) {
+      Alert.alert(
+        "No se pudo finalizar",
+        error instanceof Error ? error.message : "Intenta finalizar otra vez.",
+      );
+      return;
+    }
     if (!stopped.startedAt) return;
+    const capturedPlan = stopped.plan;
     if (!user) {
       Alert.alert(
         "Recorrido finalizado",
@@ -59,9 +83,9 @@ export function useRideController() {
     if (!pending.current) {
       pending.current = {
         routeId: null,
-        destinationName: recordingDestination.current,
-        plannedRoute: recordingPlan.current?.route ?? null,
-        destination: recordingPlan.current?.destination.coordinate ?? null,
+        destinationName: capturedPlan?.destination.label ?? null,
+        plannedRoute: capturedPlan?.route ?? null,
+        destination: capturedPlan?.destination.coordinate ?? null,
         stopPosition: stopped.coordinates.at(-1) ?? null,
         distanceKm: Number(stopped.distanceKm.toFixed(3)),
         durationSec: stopped.durationSec,
@@ -70,15 +94,19 @@ export function useRideController() {
         coordinates: stopped.coordinates,
       };
       setAutomaticName(
-        automaticRideName(recordingDestination.current, stopped.endedAt),
+        automaticRideName(
+          capturedPlan?.destination.label ?? null,
+          stopped.endedAt,
+        ),
       );
       setRideName("");
       setSaveError("");
     }
     setSaveDialogOpen(true);
   };
-  const startRecording = (discard = false) => {
-    if (inFlight.current) return;
+  const startRecording = async (discard = false) => {
+    if (inFlight.current || tracker.busy || !tracker.ready || tracker.active)
+      return;
     if (!discard && tracker.started && !saved && !tracker.active) {
       Alert.alert(
         "Tienes un recorrido sin guardar",
@@ -95,9 +123,7 @@ export function useRideController() {
       );
       return;
     }
-    if (tracker.start()) {
-      recordingDestination.current = plan?.destination.label ?? null;
-      recordingPlan.current = plan;
+    if (await tracker.start(gps.fix, selectedPlan, discard || saved)) {
       savedId.current = null;
       uploadedPhotos.current.clear();
       setPhotos([]);
@@ -112,13 +138,14 @@ export function useRideController() {
     if (
       start &&
       start !== lastStart.current &&
+      tracker.ready &&
       gps.focused &&
       canRecordFix(gps.fix)
     ) {
       lastStart.current = start;
       if (!tracker.active) startRecording();
     }
-  }, [start, gps.fix, gps.focused]);
+  }, [start, gps.fix, gps.focused, tracker.ready]);
   useEffect(() => {
     if (gps.focused) setCenterRequest((value) => value + 1);
   }, [gps.focused]);
@@ -136,13 +163,17 @@ export function useRideController() {
       };
       inFlight.current = true;
       setSaving(true);
-      if (!savedId.current)
+      if (!savedId.current) savedId.current = tracker.savedRideId;
+      if (!savedId.current) {
         savedId.current = (await ridesService.create(input)).id;
+      }
+      await tracker.markSaved(savedId.current);
       await ridePhotosService.upload(
         savedId.current,
         photos,
         uploadedPhotos.current,
       );
+      await tracker.clear();
       if (mounted.current) {
         pending.current = null;
         setSaved(true);

@@ -106,7 +106,24 @@ export function RideLayout({ controller: c }: Props) {
           onPress={c.gps.openSettings}
         />
       )}
+      {c.tracker.active && (
+        <Notice message="Grabación activa: puedes bloquear la pantalla o usar otra app. Vuelve aquí para finalizar y guardar." />
+      )}
       {!!c.tracker.error && <Notice message={c.tracker.error} />}
+      {!c.tracker.ready && !!c.tracker.error && (
+        <PrimaryButton
+          title="Reintentar recuperar recorrido"
+          outline
+          onPress={() => void c.tracker.retry()}
+        />
+      )}
+      {!!c.tracker.error && !c.tracker.active && c.tracker.ready && (
+        <PrimaryButton
+          title="Abrir ajustes de ubicación"
+          outline
+          onPress={c.gps.openSettings}
+        />
+      )}
       {c.saved && <Notice message="¡Bien hecho! Tu recorrido se guardó." />}
     </>
   );
@@ -134,11 +151,20 @@ export function RideLayout({ controller: c }: Props) {
                 ? "Comenzar recorrido"
                 : "Revisar ubicación GPS"
           }
-          disabled={c.saving || (c.gps.loading && !c.tracker.active)}
+          disabled={
+            c.saving ||
+            c.tracker.busy ||
+            !c.tracker.ready ||
+            (c.gps.loading && !c.tracker.active)
+          }
           onPress={c.tracker.active ? finish : start}
           style={({ pressed }) => [
             s.recordButton,
-            (pressed || c.saving || (c.gps.loading && !c.tracker.active)) && {
+            (pressed ||
+              c.saving ||
+              c.tracker.busy ||
+              !c.tracker.ready ||
+              (c.gps.loading && !c.tracker.active)) && {
               opacity: 0.5,
             },
           ]}
@@ -160,15 +186,17 @@ export function RideLayout({ controller: c }: Props) {
         weight="bold"
         style={{ textAlign: "center", marginTop: 12, fontSize: 13 }}
       >
-        {c.saving
-          ? "Guardando recorrido…"
-          : c.tracker.active
-            ? "Finalizar y guardar"
-            : c.gps.loading
-              ? "Buscando ubicación…"
-              : ready
-                ? "Empezar a pedalear"
-                : "Revisar ubicación GPS"}
+        {c.tracker.busy
+          ? "Preparando grabación en segundo plano…"
+          : c.saving
+            ? "Guardando recorrido…"
+            : c.tracker.active
+              ? "Finalizar y guardar"
+              : c.gps.loading
+                ? "Buscando ubicación…"
+                : ready
+                  ? "Empezar a pedalear"
+                  : "Revisar ubicación GPS"}
       </AppText>
       {!c.tracker.active && !!c.tracker.started && !c.saved && (
         <PrimaryButton

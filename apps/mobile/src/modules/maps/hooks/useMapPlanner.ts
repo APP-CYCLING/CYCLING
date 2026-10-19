@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Keyboard } from "react-native";
 import { router } from "expo-router";
 import type {
@@ -35,6 +35,23 @@ export function useMapPlanner() {
     [lane, setLane] = useState<LaneFeature | null>(null);
   const origin = originMode === "gps" ? gps.position : manualOrigin;
   const planner = useRoutePlanner(origin);
+  const autoCalculated = useRef<Destination | null>(null);
+  useEffect(() => {
+    if (!planner.destination) {
+      autoCalculated.current = null;
+      return;
+    }
+    if (
+      user &&
+      focused &&
+      origin &&
+      target !== "origin" &&
+      autoCalculated.current !== planner.destination
+    ) {
+      autoCalculated.current = planner.destination;
+      void planner.calculate();
+    }
+  }, [planner.destination, origin, target, focused, user?.id]);
   const repeat = useRepeatRide(user?.id);
   useEffect(() => {
     if (!focused || !repeat) return;
@@ -58,6 +75,7 @@ export function useMapPlanner() {
     if (focused) setCenterRequest((value) => value + 1);
   }, [focused]);
   const select = (destination: Destination) => {
+    autoCalculated.current = null;
     planner.select(destination);
     setQuery(destination.label);
     setTarget("destination");
@@ -68,6 +86,7 @@ export function useMapPlanner() {
     Keyboard.dismiss();
     setLane(null);
     if (target === "origin") {
+      autoCalculated.current = null;
       setManualOrigin(point);
       setOriginMode("manual");
       planner.cancel();
@@ -80,7 +99,10 @@ export function useMapPlanner() {
       });
   };
   const locate = () => {
-    if (originMode !== "gps") planner.cancel();
+    if (originMode !== "gps") {
+      autoCalculated.current = null;
+      planner.cancel();
+    }
     setOriginMode("gps");
     setTarget("destination");
     setCenterRequest((value) => value + 1);
@@ -91,7 +113,14 @@ export function useMapPlanner() {
       router.push("/auth");
       return;
     }
-    if (!planner.routeOrigin || !planner.route || !planner.destination) return;
+    if (
+      !planner.routeOrigin ||
+      !planner.route ||
+      !planner.destination ||
+      planner.optionStates[planner.selectedRouteMode].status !== "ready"
+    )
+      return;
+    planner.closeOptions();
     setPlannedRide({
       origin: planner.routeOrigin,
       route: planner.route,
@@ -109,7 +138,10 @@ export function useMapPlanner() {
     origin,
     originMode,
     target,
-    setTarget,
+    setTarget: (next: "origin" | "destination") => {
+      if (next === "origin") autoCalculated.current = null;
+      setTarget(next);
+    },
     query,
     setQuery,
     showLanes,

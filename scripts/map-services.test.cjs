@@ -25,6 +25,12 @@ function load(file, globals = {}) {
     AbortSignal,
     TextDecoder,
     Uint8Array,
+    require: (name) =>
+      name === "./elevation.ts"
+        ? load("supabase/functions/_shared/elevation.ts")
+        : (() => {
+            throw new Error(`Unexpected dependency ${name}`);
+          })(),
     ...globals,
   });
   return exports;
@@ -183,7 +189,7 @@ test("geocoding extracts only actual Point results and formatted labels", () => 
 test("OSM classifications distinguish lanes, shared roads and designated access", () => {
   assert.equal(
     domain.classifyLane({ highway: "residential", bicycle: "yes" }),
-    null,
+    "shared",
   );
   assert.equal(domain.classifyLane({ highway: "cycleway" }), "cycleway");
   assert.equal(
@@ -215,7 +221,7 @@ test("OSM uses original geometry and rejects partial timeout results", () => {
     ],
   });
   assert.equal(result.features[0].geometry.coordinates[0][0], -77);
-  assert.equal(result.features[0].id, "osm-way-1");
+  assert.equal(result.features[0].id, "osm-way-1-center");
   assert.throws(() =>
     domain.normalizeLanes({ remark: "runtime error: timeout", elements: [] }),
   );

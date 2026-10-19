@@ -53,8 +53,14 @@ export async function fetchJson(
   let size = 0;
   while (true) {
     let part: ReadableStreamReadResult<Uint8Array>;
-    try { part = await reader.read(); }
-    catch { throw new ApiError(504, "El proveedor interrumpió la descarga. Inténtalo de nuevo."); }
+    try {
+      part = await reader.read();
+    } catch {
+      throw new ApiError(
+        504,
+        "El proveedor interrumpió la descarga. Inténtalo de nuevo.",
+      );
+    }
     const { done, value } = part;
     if (done) break;
     size += value.length;
@@ -89,6 +95,7 @@ export function serve(
   handler: (
     body: Record<string, unknown>,
     admin: SupabaseClient<MapDatabase>,
+    userId: string,
   ) => Promise<unknown>,
 ) {
   Deno.serve(async (request) => {
@@ -160,7 +167,7 @@ export function serve(
       } catch {
         throw new ApiError(400, "JSON inválido.");
       }
-      return response(await handler(record(body), admin));
+      return response(await handler(record(body), admin, data.user.id));
     } catch (error: unknown) {
       // No devolver URLs con claves, errores del SDK ni detalles internos.
       return response(

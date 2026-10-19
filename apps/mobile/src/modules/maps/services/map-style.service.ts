@@ -1,5 +1,6 @@
 import type { StyleSpecification } from "@maplibre/maplibre-react-native";
 import { normalizeNativeStyle } from "../utils/native-style";
+import { roadPresentation } from "../utils/road-presentation";
 
 let cache: { expires: number; style: StyleSpecification } | undefined;
 export async function loadNativeMapStyle(
@@ -30,7 +31,9 @@ export async function loadNativeMapStyle(
   ) {
     throw new Error("MapTiler devolvió un estilo de mapa inválido.");
   }
-  const style = normalizeNativeStyle(value as StyleSpecification);
+  const style = roadPresentation(
+    normalizeNativeStyle(value as StyleSpecification),
+  );
   cache = { expires: Date.now() + 20 * 60000, style };
   return style;
 }

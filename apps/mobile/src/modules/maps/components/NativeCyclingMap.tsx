@@ -18,6 +18,10 @@ import {
   type InitialViewState,
 } from "@maplibre/maplibre-react-native";
 import type { FeatureCollection, Feature, LineString } from "geojson";
+import {
+  CycleInfrastructureLayers,
+  CyclewaySymbols,
+} from "./CycleInfrastructureLayers";
 import type { CyclingMapProps } from "../types/map.types";
 import {
   boundsOf,
@@ -52,6 +56,9 @@ export function NativeCyclingMap(props: CyclingMapProps) {
     [error, setError] = useState(""),
     [attempt, setAttempt] = useState(0);
   const [mapStyle, setMapStyle] = useState<StyleSpecification | null>(null);
+  const labelLayerId = mapStyle?.layers.find(
+    (layer) => layer.type === "symbol",
+  )?.id;
   const location =
     props.currentLocation !== undefined
       ? props.currentLocation
@@ -147,7 +154,12 @@ export function NativeCyclingMap(props: CyclingMapProps) {
         });
       else
         camera.current?.fitBounds(bounds, {
-          padding: { top: 55, bottom: 55, left: 35, right: 35 },
+          padding: props.fitPadding ?? {
+            top: 55,
+            bottom: 55,
+            left: 35,
+            right: 35,
+          },
           duration: 650,
         });
     }
@@ -267,7 +279,7 @@ export function NativeCyclingMap(props: CyclingMapProps) {
   }, [ready, centerRequest, location]);
   useEffect(() => {
     if (ready && (initialFocus === "route" || fitRequest > 0)) fit();
-  }, [ready, geometry, fitRequest, initialFocus]);
+  }, [ready, geometry, fitRequest, initialFocus, props.fitPadding]);
   useEffect(() => {
     if (ready && destination && !geometry && initialFocus === "route")
       camera.current?.easeTo({
@@ -330,50 +342,35 @@ export function NativeCyclingMap(props: CyclingMapProps) {
         >
           <Camera ref={camera} initialViewState={initialView} />
           {infrastructure && (
-            <GeoJSONSource
-              id="osm-cycleways"
+            <CycleInfrastructureLayers
               data={infrastructure}
-              onPress={(event) => {
-                event.stopPropagation();
-                const id = event.nativeEvent.features[0]?.id;
-                const feature = infrastructure.features.find(
-                  (f) => f.id === id,
-                );
-                if (feature) onLanePress?.(feature);
+              onPress={onLanePress}
+              beforeId={labelLayerId}
+            />
+          )}
+          {!!props.alternativeGeometries?.length && (
+            <GeoJSONSource
+              id="route-alternatives"
+              data={{
+                type: "FeatureCollection",
+                features: props.alternativeGeometries.map(
+                  (geometry, index) => ({
+                    type: "Feature",
+                    id: index,
+                    properties: {},
+                    geometry,
+                  }),
+                ),
               }}
             >
               <Layer
-                id="cycleways-exclusive"
+                id="route-alternatives-line"
+                beforeId={labelLayerId}
                 type="line"
-                filter={[
-                  "in",
-                  ["get", "kind"],
-                  ["literal", ["cycleway", "track"]],
-                ]}
-                paint={{ "line-color": colors.greenDark, "line-width": 5 }}
-              />
-              <Layer
-                id="cycleways-lanes"
-                type="line"
-                filter={["==", ["get", "kind"], "lane"]}
                 paint={{
-                  "line-color": "#608D20",
-                  "line-width": 4,
-                  "line-dasharray": [3, 1],
-                }}
-              />
-              <Layer
-                id="cycleways-shared"
-                type="line"
-                filter={[
-                  "in",
-                  ["get", "kind"],
-                  ["literal", ["shared", "designated"]],
-                ]}
-                paint={{
-                  "line-color": "#99701C",
+                  "line-color": "#5C84AC",
                   "line-width": 3,
-                  "line-dasharray": [1, 2],
+                  "line-opacity": 0.45,
                 }}
               />
             </GeoJSONSource>
@@ -391,18 +388,21 @@ export function NativeCyclingMap(props: CyclingMapProps) {
             <GeoJSONSource id="planned-route" data={routeFeature}>
               <Layer
                 id="planned-route-outline"
+                beforeId={labelLayerId}
                 type="line"
                 layout={{ "line-cap": "round", "line-join": "round" }}
-                paint={{ "line-color": colors.black, "line-width": 8 }}
+                paint={{ "line-color": "#FFFFFF", "line-width": 5 }}
               />
               <Layer
                 id="planned-route-line"
+                beforeId={labelLayerId}
                 type="line"
                 layout={{ "line-cap": "round", "line-join": "round" }}
-                paint={{ "line-color": colors.green, "line-width": 5 }}
+                paint={{ "line-color": "#2379D2", "line-width": 3 }}
               />
             </GeoJSONSource>
           )}
+          {infrastructure && <CyclewaySymbols />}
           {track && (
             <GeoJSONSource id="recorded-track" data={track}>
               <Layer

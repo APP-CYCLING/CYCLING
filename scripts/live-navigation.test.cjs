@@ -22,6 +22,8 @@ function load(path, modules = {}, globals = {}) {
     Set,
     AbortController,
     require(name) {
+      if (name === "./elevation.ts")
+        return load("supabase/functions/_shared/elevation.ts");
       if (!(name in modules)) throw new Error(`Unexpected import: ${name}`);
       return modules[name];
     },

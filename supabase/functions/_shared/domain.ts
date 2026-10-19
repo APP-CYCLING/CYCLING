@@ -1,3 +1,5 @@
+import { geoapifyElevation } from "./elevation.ts";
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -92,6 +94,7 @@ export function normalizeRoute(value: unknown) {
     durationSeconds: duration,
     geometry: normalized,
     steps: normalizeSteps(props.legs, normalized),
+    ...geoapifyElevation(props, normalized),
   };
 }
 function normalizeSteps(
@@ -219,7 +222,7 @@ export function boundedArea(value: unknown): [number, number, number, number] {
 }
 export function classifyLane(
   tags: Record<string, string>,
-): "cycleway" | "track" | "lane" | "shared" | "designated" | null {
+): "cycleway" | "track" | "lane" | "shared" | "designated" | "unknown" | null {
   if (
     ["no", "private"].includes(tags.access) ||
     tags.bicycle === "no" ||
@@ -228,6 +231,11 @@ export function classifyLane(
     return null;
   if (tags.highway === "cycleway")
     return tags.segregated === "no" ? "shared" : "cycleway";
+  if (
+    ["path", "footway"].includes(tags.highway) &&
+    tags.bicycle === "designated"
+  )
+    return tags.segregated === "yes" ? "cycleway" : "shared";
   const values = [
     "cycleway",
     "cycleway:left",
@@ -244,6 +252,14 @@ export function classifyLane(
   )
     return "shared";
   if (tags.bicycle === "designated") return "designated";
+  if (tags.bicycle === "yes") return "shared";
+  if (
+    Object.keys(tags).some(
+      (key) =>
+        key.startsWith("cycleway") && !["no", "none"].includes(tags[key]),
+    )
+  )
+    return "unknown";
   return null;
 }
 export function normalizeLanes(value: unknown) {
@@ -258,6 +274,7 @@ export function normalizeLanes(value: unknown) {
       502,
       "Respuesta de ciclovías demasiado grande o inválida.",
     );
+  const seen = new Set<string>();
   const features = data.elements.flatMap((item: unknown) => {
     const way = record(item);
     if (
@@ -272,22 +289,75 @@ export function normalizeLanes(value: unknown) {
       if (typeof val === "string") tags[key] = val;
     const kind = classifyLane(tags);
     if (!kind) return [];
+    if (seen.has(String(way.id))) return [];
+    seen.add(String(way.id));
     const coordinates = way.geometry.map((p: unknown) => {
       const node = record(p);
       return position([node.lon, node.lat]);
     });
-    return [
-      {
+    const independent =
+      tags.highway === "cycleway" || ["path", "footway"].includes(tags.highway);
+    const sides = independent
+      ? ["center"]
+      : tags["cycleway:both"] &&
+          !["no", "none", "separate"].includes(tags["cycleway:both"])
+        ? ["left", "right"]
+        : ["left", "right"].filter(
+            (side) =>
+              tags[`cycleway:${side}`] &&
+              !["no", "none", "separate"].includes(tags[`cycleway:${side}`]),
+          );
+    return (sides.length ? sides : ["center"]).map((side) => {
+      const sideTags =
+        side === "center"
+          ? tags
+          : {
+              ...tags,
+              cycleway: tags[`cycleway:${side}`] || tags["cycleway:both"],
+            };
+      if (side !== "center")
+        for (const field of [
+          "cycleway:left",
+          "cycleway:right",
+          "cycleway:both",
+        ])
+          delete sideTags[field];
+      const laneKind = classifyLane(sideTags) || kind;
+      const advisory =
+        tags[`cycleway:${side}:lane`] === "advisory" ||
+        tags["cycleway:lane"] === "advisory" ||
+        tags["cycleway:both:lane"] === "advisory";
+      const infrastructure = advisory
+        ? "shared"
+        : ["cycleway", "track"].includes(laneKind)
+          ? "segregated"
+          : laneKind === "lane"
+            ? "lane"
+            : laneKind === "shared"
+              ? "shared"
+              : "unknown";
+      return {
         type: "Feature" as const,
-        id: `osm-way-${way.id}`,
+        id: `osm-way-${way.id}-${side}`,
         geometry: { type: "LineString" as const, coordinates },
         properties: {
           name: tags.name ?? "Infraestructura ciclista sin nombre",
-          kind,
+          kind: laneKind,
+          infrastructure,
           tags,
+          osmWayId: String(way.id),
+          side,
+          geometryBasis: independent
+            ? "independent"
+            : side === "center"
+              ? "attribute"
+              : "visual_offset",
+          source: "OpenStreetMap",
+          validation: "unverified",
+          updatedAt: new Date().toISOString(),
         },
-      },
-    ];
+      };
+    });
   });
   return { type: "FeatureCollection" as const, features };
 }

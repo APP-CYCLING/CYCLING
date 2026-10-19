@@ -334,7 +334,7 @@ test("routing takes the current GPS origin at confirmation and keeps that origin
       react: runtime.react,
       "../services/planner.service": {
         plannerService: {
-          calculate: (origin, destination) => {
+          fast: (origin, destination) => {
             calls.push({ origin, destination });
             return new Promise((resolve) => {
               resolveRoute = resolve;

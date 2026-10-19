@@ -8,6 +8,7 @@ import { StartupScreen } from "../shared/components/StartupScreen";
 import { FontReadyContext } from "../shared/theme/FontContext";
 import { ThemeProvider, useTheme } from "../shared/theme/ThemeContext";
 import * as SystemUI from "expo-system-ui";
+import { RecordingLifecycle } from "../modules/rides/components/RecordingLifecycle";
 export default function Root() {
   return (
     <ThemeProvider>
@@ -40,6 +41,7 @@ export function RootContent() {
   return (
     <FontReadyContext.Provider value={fontsLoaded}>
       <AuthProvider>
+        <RecordingLifecycle />
         <StatusBar style={scheme === "dark" ? "light" : "dark"} />
         <Stack
           screenOptions={{
@@ -55,6 +57,8 @@ export function RootContent() {
             options={{ title: "Detalle de ruta" }}
           />
           <Stack.Screen name="auth" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/callback" options={{ headerShown: false }} />
+          <Stack.Screen name="albums" options={{ headerShown: false }} />
           <Stack.Screen
             name="edit-profile"
             options={{ headerShown: false, gestureEnabled: false }}

@@ -22,6 +22,9 @@ export const profileService = {
   async update(userId: string, input: CyclingProfile): Promise<CyclingProfile> {
     const valid = validateProfile(input);
     const user = await currentUser(userId);
+    for (const path of [valid.avatarPath, valid.coverPath])
+      if (path && (!path.startsWith(`${userId}/`) || path.includes("..")))
+        throw new Error("La imagen de perfil no pertenece a tu cuenta.");
     const { name, ...cyclingProfile } = valid;
     const previous = user.user_metadata.cycling_profile;
     const { data, error } = await getSupabase().auth.updateUser({

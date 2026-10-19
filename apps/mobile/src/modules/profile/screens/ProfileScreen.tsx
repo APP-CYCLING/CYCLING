@@ -2,6 +2,7 @@ import { rideDisplayName } from "../../rides/utils/ride-name";
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   ScrollView,
   Share,
@@ -19,6 +20,7 @@ import {
 } from "../../rides/utils/activity-summary";
 import { useCyclingProfile } from "../hooks/useCyclingProfile";
 import { SettingsRow } from "../components/ProfileUI";
+import { ThemeSettingsRow } from "../../../shared/components/ThemeSettingsRow";
 import {
   AppText,
   Avatar,
@@ -39,6 +41,7 @@ import {
   useThemedStyles,
 } from "../../../shared/theme/ThemeContext";
 import type { Palette } from "../../../shared/theme/colors";
+import { useProfileMedia } from "../hooks/useProfileMedia";
 export default function ProfileScreen() {
   const colors = useThemeColors();
   const s = useThemedStyles(createStyles);
@@ -51,6 +54,7 @@ export default function ProfileScreen() {
   const profile = remote.profile,
     summary = summarizeRides(history.rides),
     monthly = summarizeRides(filterRides(history.rides, "month"));
+  const media = useProfileMedia(profile);
   const goal =
     Number(profile?.monthlyGoalKm) > 0 ? Number(profile?.monthlyGoalKm) : 250;
   const progress = Math.min(1, monthly.distanceKm / goal);
@@ -109,8 +113,19 @@ export default function ProfileScreen() {
       <ScreenHeader title="Mi perfil" />
       <Page>
         <Panel style={{ gap: 16 }}>
+          {!!media.coverUrl && (
+            <Image
+              source={{ uri: media.coverUrl }}
+              accessibilityLabel="Tu portada de perfil"
+              style={{ width: "100%", height: 150, borderRadius: 20 }}
+            />
+          )}
           <View style={s.identity}>
-            <Avatar name={profile?.name || user?.name} large />
+            <Avatar
+              name={profile?.name || user?.name}
+              large
+              uri={media.avatarUrl}
+            />
             <View style={{ flex: 1, gap: 5 }}>
               <AppText style={s.kicker}>
                 {user ? "COMUNIDAD CYCLING" : "A TU RITMO"}
@@ -189,6 +204,32 @@ export default function ProfileScreen() {
             </>
           )}
         </Panel>
+        {!!media.error && (
+          <>
+            <Notice message={media.error} />
+            <PrimaryButton
+              title="Actualizar imágenes"
+              outline
+              onPress={media.refresh}
+            />
+          </>
+        )}
+        {user && (
+          <Panel style={{ gap: 10 }}>
+            <AppText weight="bold" style={{ fontSize: 19 }}>
+              Álbumes
+            </AppText>
+            <AppText style={s.caption}>
+              Tus fotos y videos agrupados por salida o momento. También
+              encontrarás las fotos de tus recorridos.
+            </AppText>
+            <PrimaryButton
+              title="Abrir mis álbumes →"
+              outline
+              onPress={() => router.push("/albums")}
+            />
+          </Panel>
+        )}
         {!user ? (
           <>
             <Notice message="Inicia sesión para guardar tus datos y consultar tu progreso." />
@@ -385,6 +426,7 @@ export default function ProfileScreen() {
         )}
         <SectionHeading title="Configuración y seguridad" />
         <Panel style={{ gap: 0 }}>
+          <ThemeSettingsRow />
           <SettingsRow
             icon="bicycle-outline"
             title="Mi bicicleta y preferencias"

@@ -47,28 +47,49 @@ function nodes(tree, predicate) {
     ...nodes(tree.props?.children, predicate),
   ];
 }
-test("theme follows phone changes, including after mount, without mutating physical black and white", () => {
-  let scheme = "light",
-    provided;
+test("theme defaults to light on a dark phone and changes only through the saved app preference", async () => {
+  const { ThemePreference } = load(
+    "apps/mobile/src/shared/theme/theme-preference.ts",
+  );
+  let provided,
+    saved = null;
+  const native = [];
   const theme = load("apps/mobile/src/shared/theme/ThemeContext.tsx", {
-    react: { ...react, useContext: (context) => provided ?? context.value },
-    "react-native": { useColorScheme: () => scheme },
+    react: {
+      ...react,
+      useContext: (context) => provided ?? context.value,
+      useSyncExternalStore: (_, snapshot) => snapshot(),
+      useEffect: (fn) => fn(),
+    },
+    "react-native": {
+      useColorScheme: () => {
+        throw new Error("Must not read the phone theme");
+      },
+      Appearance: { setColorScheme: (value) => native.push(value) },
+    },
+    "@react-native-async-storage/async-storage": {
+      getItem: async () => saved,
+      setItem: async (_, value) => {
+        saved = value;
+      },
+    },
+    "./theme-preference": { ThemePreference },
     "./colors": palettes,
   });
-  provided = theme.ThemeProvider({ children: "screen" }).props.value;
+  const render = () => {
+    provided = theme.ThemeProvider({ children: "screen" }).props.value;
+  };
+  render();
   assert.equal(theme.useThemeColors(), palettes.lightColors);
-  scheme = "dark";
-  provided = theme.ThemeProvider({ children: "screen" }).props.value;
+  assert.equal(native.at(-1), "light");
+  await provided.setDarkMode(true);
+  render();
   assert.equal(theme.useThemeColors(), palettes.darkColors);
-  assert.equal(
-    theme.ThemeProvider({ children: "screen" }).props.value.scheme,
-    "dark",
-  );
-  scheme = "light";
-  assert.equal(
-    theme.ThemeProvider({ children: "screen" }).props.value.scheme,
-    "light",
-  );
+  assert.equal(native.at(-1), "dark");
+  await provided.setDarkMode(false);
+  render();
+  assert.equal(theme.useThemeColors(), palettes.lightColors);
+  assert.equal(native.at(-1), "light");
   assert.equal(palettes.darkColors.black, "#0F1210");
   assert.equal(palettes.darkColors.white, "#FFFFFF");
   assert.equal(palettes.darkColors.green, "#A7F55B");
@@ -81,6 +102,131 @@ function luminance(hex) {
     .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
 }
+
+test("dark mode persists across app launches and can be switched back to light", async () => {
+  const { ThemePreference } = load(
+    "apps/mobile/src/shared/theme/theme-preference.ts",
+  );
+  let saved = null;
+  const storage = {
+    getItem: async () => saved,
+    setItem: async (_, value) => {
+      saved = value;
+    },
+  };
+  const first = new ThemePreference(storage);
+  await first.restore();
+  assert.equal(first.getSnapshot().scheme, "light");
+  await first.setDarkMode(true);
+  const reopened = new ThemePreference(storage);
+  await reopened.restore();
+  assert.equal(reopened.getSnapshot().scheme, "dark");
+  await reopened.setDarkMode(false);
+  const again = new ThemePreference(storage);
+  await again.restore();
+  assert.equal(again.getSnapshot().scheme, "light");
+});
+
+test("late preference hydration cannot replace a new selection, and rapid writes preserve the last choice", async () => {
+  const { ThemePreference } = load(
+    "apps/mobile/src/shared/theme/theme-preference.ts",
+  );
+  let resolveRead, saved;
+  const preference = new ThemePreference({
+    getItem: () =>
+      new Promise((resolve) => {
+        resolveRead = resolve;
+      }),
+    setItem: async (_, value) => {
+      saved = value;
+    },
+  });
+  const loading = preference.restore();
+  const first = preference.setDarkMode(true);
+  const second = preference.setDarkMode(false);
+  resolveRead("dark");
+  await Promise.all([loading, first, second]);
+  assert.equal(preference.getSnapshot().scheme, "light");
+  assert.equal(saved, "light");
+  assert.equal(preference.getSnapshot().saving, false);
+});
+
+test("unreadable and invalid preferences fall back to light without blocking the app", async () => {
+  const { ThemePreference } = load(
+    "apps/mobile/src/shared/theme/theme-preference.ts",
+  );
+  for (const storage of [
+    { getItem: async () => "system" },
+    {
+      getItem: async () => {
+        throw new Error("read failed");
+      },
+    },
+  ]) {
+    const preference = new ThemePreference(storage);
+    await preference.restore();
+    assert.equal(preference.getSnapshot().ready, true);
+    assert.equal(preference.getSnapshot().scheme, "light");
+  }
+});
+
+test("failed theme persistence shows an error and subsequent selections can recover", async () => {
+  const { ThemePreference } = load(
+    "apps/mobile/src/shared/theme/theme-preference.ts",
+  );
+  let fail = true,
+    saved;
+  const preference = new ThemePreference({
+    getItem: async () => null,
+    setItem: async (_, value) => {
+      if (fail) throw new Error("disk full");
+      saved = value;
+    },
+  });
+  await preference.restore();
+  await preference.setDarkMode(true);
+  assert.equal(preference.getSnapshot().scheme, "dark");
+  assert.equal(preference.getSnapshot().saving, false);
+  assert.match(preference.getSnapshot().error, /no se pudo guardar/);
+  fail = false;
+  await preference.setDarkMode(false);
+  assert.equal(saved, "light");
+  assert.equal(preference.getSnapshot().error, "");
+});
+
+test("settings exposes a native accessible switch connected to the app preference", async () => {
+  let enabled;
+  const { ThemeSettingsRow } = load(
+    "apps/mobile/src/shared/components/ThemeSettingsRow.tsx",
+    {
+      react,
+      "react-native": { Switch: "Switch", View: "View" },
+      "@expo/vector-icons": { Ionicons: "Icon" },
+      "./DesignSystem": { AppText: "Text" },
+      "../theme/ThemeContext": {
+        useTheme: () => ({
+          scheme: "light",
+          ready: true,
+          saving: false,
+          error: "",
+          colors: palettes.lightColors,
+          setDarkMode: async (value) => {
+            enabled = value;
+          },
+        }),
+      },
+    },
+  );
+  const control = nodes(
+    ThemeSettingsRow(),
+    (node) => node.type === "Switch",
+  )[0];
+  assert.equal(control.props.accessibilityLabel, "Modo oscuro");
+  assert.equal(control.props.value, false);
+  assert.equal(control.props.disabled, false);
+  control.props.onValueChange(true);
+  assert.equal(enabled, true);
+});
 function contrast(a, b) {
   const values = [luminance(a), luminance(b)].sort((a, b) => b - a);
   return (values[0] + 0.05) / (values[1] + 0.05);
@@ -265,12 +411,13 @@ test("loader uses supplied motion frames and stops for reduced motion, late pref
   assert.equal(removed, 2);
   assert.ok(cancelled >= 3);
 });
-test("native configuration references real PNGs, preserves package, uses automatic appearance and has no GIF splash", () => {
+test("native configuration references real PNGs, preserves package, defaults to light appearance and has no GIF splash", () => {
   const c = JSON.parse(
     fs.readFileSync(path.join(root, "apps/mobile/app.json"), "utf8"),
   ).expo;
   assert.equal(c.android.package, "com.cycling.app");
-  assert.equal(c.userInterfaceStyle, "automatic");
+  assert.equal(c.userInterfaceStyle, "light");
+  assert.equal(c.backgroundColor, "#FFFFFF");
   const splash = c.plugins.find(
     (p) => Array.isArray(p) && p[0] === "expo-splash-screen",
   )[1];
@@ -279,7 +426,6 @@ test("native configuration references real PNGs, preserves package, uses automat
     c.android.adaptiveIcon.foregroundImage,
     c.android.adaptiveIcon.monochromeImage,
     splash.image,
-    splash.dark.image,
   ]) {
     const p = path.resolve(root, "apps/mobile", file);
     assert.ok(fs.existsSync(p));
@@ -289,6 +435,11 @@ test("native configuration references real PNGs, preserves package, uses automat
     assert.ok(bytes.readUInt32BE(16) >= 200);
     assert.ok(bytes.readUInt32BE(20) >= 200);
   }
+  assert.equal(
+    splash.dark,
+    undefined,
+    "native splash must not follow the phone theme",
+  );
   const monochrome = fs.readFileSync(
     path.resolve(root, "apps/mobile", c.android.adaptiveIcon.monochromeImage),
   );

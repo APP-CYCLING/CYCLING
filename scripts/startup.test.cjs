@@ -111,6 +111,9 @@ test("root shows native loading content while fonts are pending, then mounts the
       "expo-status-bar": { StatusBar: "StatusBar" },
       "expo-system-ui": { setBackgroundColorAsync: async () => {} },
       "../modules/auth/context/AuthContext": { AuthProvider: "AuthProvider" },
+      "../modules/rides/components/RecordingLifecycle": {
+        RecordingLifecycle: "RecordingLifecycle",
+      },
       "../shared/config/env": { getConfigurationError: () => null },
       "../shared/components/StartupScreen": { StartupScreen: "StartupScreen" },
       "../shared/theme/FontContext": {

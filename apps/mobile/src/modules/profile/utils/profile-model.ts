@@ -23,6 +23,8 @@ export type CyclingProfile = {
   bikeName: string;
   bikeType: string;
   monthlyGoalKm: string;
+  avatarPath?: string;
+  coverPath?: string;
 };
 const text = (value: unknown, fallback = "") =>
   typeof value === "string" ? value : fallback;
@@ -36,7 +38,7 @@ export function profileFromMetadata(
       ? (raw as Record<string, unknown>)
       : {};
   return {
-    name: text(metadata.name, name),
+    name: text(metadata.name, text(metadata.full_name, name)),
     username: text(p.username),
     location: text(p.location),
     bio: text(p.bio),
@@ -53,6 +55,8 @@ export function profileFromMetadata(
     bikeName: text(p.bikeName),
     bikeType: text(p.bikeType),
     monthlyGoalKm: text(p.monthlyGoalKm, "250"),
+    avatarPath: text(p.avatarPath),
+    coverPath: text(p.coverPath),
   };
 }
 export function validateProfile(input: CyclingProfile): CyclingProfile {

@@ -195,7 +195,14 @@ export default function AuthScreen() {
             )}
           </Pressable>
           <View style={{ marginTop: 7 }}>
-            <SocialOptions register={creating} />
+            <SocialOptions
+              register={creating}
+              busy={form.busy}
+              onGoogle={() => {
+                Keyboard.dismiss();
+                void form.googleSubmit();
+              }}
+            />
           </View>
           <View style={s.switchRow}>
             <AppText style={{ color: colors.muted, fontSize: 13 }}>

@@ -27,9 +27,11 @@ export type CyclingMapProps = {
   navigationBearing?: number;
   onFollowChange?: (follow: boolean) => void;
   geometry?: RouteGeometry;
+  alternativeGeometries?: RouteGeometry[];
   infrastructure?: LaneCollection;
   centerRequest?: number;
   fitRequest?: number;
+  fitPadding?: { top: number; bottom: number; left: number; right: number };
   initialFocus?: "location" | "route";
   onPick?: (point: Coordinate) => void;
   onBoundsChange?: (bounds: Bounds) => void;

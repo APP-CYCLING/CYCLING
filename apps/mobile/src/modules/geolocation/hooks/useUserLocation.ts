@@ -8,7 +8,7 @@ import {
 } from "../services/location-session";
 import { isFreshFix } from "../utils/location-policy";
 
-export function useUserLocation() {
+export function useUserLocation(watchEnabled = true) {
   const focused = useScreenFocused();
   // Android puede iniciar currentState=null. Inactive incluye diálogos del SO,
   // por lo que solo background interrumpe esta sesión de primer plano.
@@ -24,9 +24,9 @@ export function useUserLocation() {
     return () => listener.remove();
   }, []);
   useEffect(() => {
-    if (!focused || !foreground) return;
+    if (!focused || !foreground || !watchEnabled) return;
     return startLocationSession(locationService, setState);
-  }, [attempt, focused, foreground]);
+  }, [attempt, focused, foreground, watchEnabled]);
   const request = useCallback(() => {
     if (!state.loading) setAttempt((value) => value + 1);
   }, [state.loading]);

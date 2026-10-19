@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useThemeColors, useThemedStyles } from "../theme/ThemeContext";
@@ -50,9 +50,11 @@ export function IconButton({
 export function Avatar({
   name,
   large = false,
+  uri,
 }: {
   name?: string;
   large?: boolean;
+  uri?: string;
 }) {
   const styles = useThemedStyles(createStyles);
 
@@ -63,7 +65,17 @@ export function Avatar({
         large && { width: 80, height: 80, borderRadius: 40 },
       ]}
     >
-      {name ? (
+      {uri ? (
+        <Image
+          source={{ uri }}
+          accessibilityLabel="Foto de perfil"
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: large ? 40 : 20,
+          }}
+        />
+      ) : name ? (
         <AppText weight="heavy" style={{ fontSize: large ? 28 : 14 }}>
           {name
             ?.trim()

@@ -5,12 +5,12 @@
     "scheme": "cycling",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
-    "backgroundColor": "#0F1210",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFFFF",
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "cycling usa tu ubicación para mostrarte en el mapa y registrar tus recorridos."
+        "NSLocationWhenInUseUsageDescription": "cycling usa tu ubicaci\u00f3n para mostrarte en el mapa y registrar tus recorridos."
       }
     },
     "android": {
@@ -32,7 +32,12 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Permitir que cycling acceda a tu ubicación mientras utilizas la app."
+          "locationWhenInUsePermission": "Permitir que cycling acceda a tu ubicaci\u00f3n mientras utilizas la app.",
+          "locationAlwaysAndWhenInUsePermission": "CYCLING usa tu ubicaci\u00f3n durante un recorrido activo, incluso con la pantalla bloqueada, para registrar tu trayecto hasta que pulses Finalizar.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "androidForegroundServiceIcon": "./assets/branding/02_APP_ASSETS/adaptive/adaptive-monochrome-safe.png"
         }
       ],
       "expo-secure-store",
@@ -42,7 +47,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Permite seleccionar fotos para tus actividades de CYCLING.",
+          "photosPermission": "Permite seleccionar fotos y videos para tu perfil, tus ?lbumes y tus actividades de CYCLING.",
           "cameraPermission": false,
           "microphonePermission": false
         }
@@ -53,13 +58,11 @@
           "backgroundColor": "#FFFFFF",
           "image": "./assets/branding/03_SPLASH/native-splash-light.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "dark": {
-            "backgroundColor": "#070A09",
-            "image": "./assets/branding/03_SPLASH/native-splash-dark.png"
-          }
+          "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-web-browser",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": false

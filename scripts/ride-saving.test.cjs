@@ -194,14 +194,25 @@ test("finishing captures the destination once and preserves the stopped ride and
   const tracker = {
     active: false,
     started: null,
-    start() {
+    ready: true,
+    lastFix: null,
+    plan: null,
+    savedRideId: null,
+    async markSaved(id) {
+      this.savedRideId = id;
+    },
+    async clear() {
+      this.started = null;
+    },
+    start(fix, currentPlan) {
+      this.plan = currentPlan;
       this.active = true;
       this.started = input.startedAt;
       return true;
     },
     stop() {
       this.active = false;
-      return { ...input, startedAt: input.startedAt };
+      return { ...input, startedAt: input.startedAt, plan: this.plan };
     },
   };
   const { useRideController } = load(
@@ -238,15 +249,18 @@ test("finishing captures the destination once and preserves the stopped ride and
       "../../geolocation/hooks/useUserLocation": {
         useUserLocation: () => ({ focused: true, fix: {} }),
       },
-      "../../geolocation/utils/location-policy": { canRecordFix: () => true },
+      "../../geolocation/utils/location-policy": {
+        canRecordFix: () => true,
+        isFreshFix: (fix) => !!fix,
+      },
     },
   );
   const render = () => runtime.render(useRideController);
   let value = render();
-  value.startRecording();
+  await value.startRecording();
   plan = { destination: { label: "Changed after starting" } };
   value = render();
-  value.finish();
+  await value.finish();
   value = render();
   assert.equal(value.saveDialogOpen, true);
   assert.match(value.automaticName, /^Destino original/);
@@ -259,7 +273,7 @@ test("finishing captures the destination once and preserves the stopped ride and
   assert.equal(value.saved, false);
   value.closeSaveDialog();
   value = render();
-  value.finish();
+  await value.finish();
   value = render();
   assert.equal(value.rideName, "Mi paseo");
   fail = false;
@@ -321,7 +335,10 @@ test("expanding the ride map preserves its React parent and key instead of remou
       },
       "../../navigation/utils/live-navigation": { distanceLabel: String },
       "../../maps/components/CyclingMap": { CyclingMap: "NativeMap" },
-      "../../geolocation/utils/location-policy": { canRecordFix: () => true },
+      "../../geolocation/utils/location-policy": {
+        canRecordFix: () => true,
+        isFreshFix: (fix) => !!fix,
+      },
       "../../../shared/components/DesignSystem": Object.fromEntries(
         ["AppText", "Chip", "IconButton", "MetricTile", "ScreenHeader"].map(
           (name) => [name, name],

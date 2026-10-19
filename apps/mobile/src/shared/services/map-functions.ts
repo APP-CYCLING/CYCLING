@@ -16,10 +16,13 @@ export async function callMapFunction<T>(
   const controller = new AbortController();
   let timedOut = false;
   const cancel = () => controller.abort();
-  const timer = setTimeout(() => {
-    timedOut = true;
-    cancel();
-  }, 35000);
+  const timer = setTimeout(
+    () => {
+      timedOut = true;
+      cancel();
+    },
+    "alternatives" in body ? 65000 : 35000,
+  );
   const cancelled = new Promise<never>((_, reject) => {
     const abort = () =>
       reject(

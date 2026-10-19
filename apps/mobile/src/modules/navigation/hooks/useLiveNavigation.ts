@@ -256,6 +256,7 @@ export function useLiveNavigation(
         fix.coordinate,
         plan.destination.coordinate,
         controller.signal,
+        route?.mode,
       );
       if (mounted.current && !controller.signal.aborted)
         setOverride({ source: plan, route: nextRoute });

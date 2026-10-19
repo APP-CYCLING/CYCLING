@@ -40,6 +40,9 @@ import {
   useThemedStyles,
 } from "../../../shared/theme/ThemeContext";
 import type { Palette } from "../../../shared/theme/colors";
+import { useProfileMedia } from "../hooks/useProfileMedia";
+import { profileMediaService } from "../services/profile-media.service";
+import type { MediaDraft } from "../../../shared/services/media-upload";
 export default function EditProfileScreen() {
   const { user } = useAuth();
   return <Editor key={user?.id ?? "guest"} />;
@@ -50,6 +53,11 @@ function Editor() {
 
   const { user } = useAuth(),
     remote = useCyclingProfile();
+  const media = useProfileMedia(remote.profile);
+  const [avatar, setAvatar] = useState<MediaDraft | null>(null),
+    [cover, setCover] = useState<MediaDraft | null>(null),
+    [picking, setPicking] = useState(false);
+  const pickBusy = useRef(false);
   const [draft, setDraft] = useState<CyclingProfile | null>(null),
     [baseline, setBaseline] = useState(""),
     [saving, setSaving] = useState(false),
@@ -71,8 +79,8 @@ function Editor() {
   const goBack = () =>
     router.canGoBack() ? router.back() : router.replace("/profile");
   const leave = () => {
-    if (saving) return;
-    if (draft && JSON.stringify(draft) !== baseline)
+    if (saving || picking) return;
+    if (draft && (JSON.stringify(draft) !== baseline || avatar || cover))
       Alert.alert(
         "¿Descartar cambios?",
         "Tus cambios todavía no se han guardado.",
@@ -96,7 +104,26 @@ function Editor() {
       },
     );
     return () => subscription.remove();
-  }, [draft, baseline, saving]);
+  }, [draft, baseline, saving, picking, avatar, cover]);
+  const choose = async (kind: "avatar" | "cover") => {
+    if (inFlight.current || pickBusy.current) return;
+    pickBusy.current = true;
+    setPicking(true);
+    setError("");
+    try {
+      const [asset] = await profileMediaService.pick(kind);
+      if (asset && mounted.current)
+        (kind === "avatar" ? setAvatar : setCover)(asset);
+    } catch (e) {
+      if (mounted.current)
+        setError(
+          e instanceof Error ? e.message : "No se pudo seleccionar la imagen.",
+        );
+    } finally {
+      pickBusy.current = false;
+      if (mounted.current) setPicking(false);
+    }
+  };
   const change = <K extends keyof CyclingProfile>(
     key: K,
     value: CyclingProfile[K],
@@ -105,16 +132,30 @@ function Editor() {
     setError("");
   };
   const save = async () => {
-    if (!user || !draft || inFlight.current) return;
+    if (!user || !draft || inFlight.current || picking) return;
     setError("");
     try {
       const valid = validateProfile(draft);
       inFlight.current = true;
       setSaving(true);
+      if (avatar)
+        valid.avatarPath = await profileMediaService.upload(
+          user.id,
+          "avatar",
+          avatar,
+        );
+      if (cover)
+        valid.coverPath = await profileMediaService.upload(
+          user.id,
+          "cover",
+          cover,
+        );
       const updated = await profileService.update(user.id, valid);
       if (mounted.current) {
         setDraft(updated);
         setBaseline(JSON.stringify(updated));
+        setAvatar(null);
+        setCover(null);
         Alert.alert("Perfil actualizado", "Tus cambios se guardaron.", [
           { text: "Continuar", onPress: goBack },
         ]);
@@ -146,7 +187,7 @@ function Editor() {
           </AppText>
           <Pressable
             accessibilityRole="button"
-            disabled={saving || !draft || !user}
+            disabled={saving || picking || !draft || !user}
             onPress={() => void save()}
             style={[s.save, (saving || !draft) && { opacity: 0.5 }]}
           >
@@ -180,10 +221,18 @@ function Editor() {
             >
               <View style={s.identityHero}>
                 <ImageBackground
-                  source={require("../../../../assets/images/stitch/profile-cover.jpg")}
+                  source={
+                    cover?.uri || media.coverUrl
+                      ? { uri: cover?.uri || media.coverUrl }
+                      : require("../../../../assets/images/stitch/profile-cover.jpg")
+                  }
                   style={s.cover}
                   imageStyle={{ borderRadius: 18 }}
-                  accessibilityLabel="Portada ilustrativa de ciclismo"
+                  accessibilityLabel={
+                    cover?.uri || media.coverUrl
+                      ? "Tu portada de perfil"
+                      : "Portada ilustrativa de ciclismo"
+                  }
                 />
                 <View
                   style={{
@@ -194,7 +243,11 @@ function Editor() {
                     borderColor: colors.surfaceLow,
                   }}
                 >
-                  <Avatar name={draft.name} large />
+                  <Avatar
+                    name={draft.name}
+                    large
+                    uri={avatar?.uri || media.avatarUrl}
+                  />
                 </View>
                 <View style={{ alignItems: "center", paddingBottom: 4 }}>
                   <Chip
@@ -204,6 +257,50 @@ function Editor() {
                   />
                 </View>
               </View>
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <PrimaryButton
+                    title="Cambiar foto"
+                    outline
+                    disabled={saving || picking}
+                    onPress={() => void choose("avatar")}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <PrimaryButton
+                    title="Cambiar portada"
+                    outline
+                    disabled={saving || picking}
+                    onPress={() => void choose("cover")}
+                  />
+                </View>
+              </View>
+              {picking && (
+                <AppText style={s.hint}>Abriendo selector de imágenes…</AppText>
+              )}
+              {!!media.error && (
+                <>
+                  <Notice message={media.error} />
+                  <PrimaryButton
+                    title="Actualizar imágenes"
+                    outline
+                    onPress={media.refresh}
+                  />
+                </>
+              )}
+              <Panel>
+                <AppText weight="bold">Álbumes</AppText>
+                <AppText style={s.hint}>
+                  Agrupa fotos y videos con un nombre y una fecha. También
+                  encontrarás las fotos de tus recorridos.
+                </AppText>
+                <PrimaryButton
+                  title="Abrir mis álbumes →"
+                  outline
+                  disabled={saving || picking}
+                  onPress={() => router.push("/albums")}
+                />
+              </Panel>
               <ProfileSectionTitle
                 icon="person-outline"
                 title="Identidad ciclista"
@@ -353,14 +450,14 @@ function Editor() {
                   todavía no están disponibles.
                 </AppText>
                 <AppText style={s.hint}>
-                  La foto de perfil y la gestión de varias bicicletas se
-                  incorporarán en una siguiente versión.
+                  La gestión de varias bicicletas se incorporará en una
+                  siguiente versión.
                 </AppText>
               </Panel>
               {!!error && <Notice message={error} />}
               <PrimaryButton
                 title={saving ? "Guardando cambios…" : "Guardar cambios"}
-                disabled={saving}
+                disabled={saving || picking}
                 onPress={() => void save()}
               />
               <Pressable

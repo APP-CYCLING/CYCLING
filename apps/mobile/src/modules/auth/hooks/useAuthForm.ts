@@ -127,6 +127,33 @@ export function useAuthForm() {
       if (mounted.current) setBusy(false);
     }
   };
+  const googleSubmit = async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setBusy(true);
+    setError("");
+    setSuccess("");
+    try {
+      const { signInWithGoogle } =
+        await import("../services/google-auth.service");
+      if ((await signInWithGoogle()) && mounted.current) {
+        setPassword("");
+        router.replace("/");
+      }
+    } catch (e) {
+      if (mounted.current)
+        setError(
+          e instanceof Error
+            ? /native module|Cannot find/i.test(e.message)
+              ? "Instala una nueva APK de CYCLING para acceder con Google."
+              : e.message
+            : "No se pudo acceder con Google.",
+        );
+    } finally {
+      inFlight.current = false;
+      if (mounted.current) setBusy(false);
+    }
+  };
   return {
     mode,
     name,
@@ -143,5 +170,6 @@ export function useAuthForm() {
     leave,
     toggleRemember,
     submit,
+    googleSubmit,
   };
 }

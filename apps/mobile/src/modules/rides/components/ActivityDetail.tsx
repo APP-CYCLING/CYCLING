@@ -21,6 +21,7 @@ import { RecordedRideMap, rideStatusLabel } from "./RecordedRideMap";
 import { RideMetrics } from "./ActivityRideCard";
 import { rideDisplayName } from "../utils/ride-name";
 import { useThemeColors } from "../../../shared/theme/ThemeContext";
+import { ElevationProfile } from "../../route-planner/components/ElevationProfile";
 
 export function ActivityDetail({
   ride,
@@ -151,6 +152,18 @@ export function ActivityDetail({
           confirma que hayas seguido cada tramo.
         </AppText>
       </Panel>
+      {!!ride.plannedRoute && (
+        <Panel>
+          <ElevationProfile
+            route={ride.plannedRoute}
+            label="Elevación de la ruta prevista"
+          />
+          <AppText style={{ fontSize: 11, color: colors.muted }}>
+            Corresponde al recorrido planificado completo, no al tramo GPS
+            realmente grabado.
+          </AppText>
+        </Panel>
+      )}
       <AppText weight="bold" style={{ fontSize: 18 }}>
         Fotos de tu actividad
       </AppText>
