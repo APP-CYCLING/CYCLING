@@ -15,7 +15,7 @@ Aplicación de ciclismo con React Native, Expo SDK 57, Expo Router y Supabase Cl
 
 El proyecto Supabase existente ya tiene la migración inicial. No repetirla ni ejecutar seed sobre producción.
 
-1. Copiar `apps/mobile/.env.example` a `apps/mobile/.env` si aún no existe y configurar las tres variables públicas.
+1. Crear `apps/mobile/.env` si aún no existe y configurar `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` y `EXPO_PUBLIC_MAPTILER_KEY`.
 2. Mantener `GEOAPIFY_API_KEY` exclusivamente en Supabase Secrets. No colocar claves administrativas ni Geoapify en variables EXPO_PUBLIC.
 3. Revisar el bloqueo documentado de cuotas/caché antes de probar routing o búsqueda autenticados. La migración aditiva está preparada, sin aplicar.
 4. Para EAS, configurar las variables públicas en el entorno del perfil de compilación. Los pasos están en [MAPS_IMPLEMENTATION.md](MAPS_IMPLEMENTATION.md).
